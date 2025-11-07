@@ -18,6 +18,7 @@ export function useApi() {
       };
     } catch (error) {
       let message = "Đã xảy ra lỗi. Vui lòng thử lại!";
+      console.log({ error });
       if (error.response?.data?.message) {
         const msg = error.response.data.message;
 

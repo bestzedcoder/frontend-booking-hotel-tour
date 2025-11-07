@@ -22,12 +22,14 @@ axiosClient.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
+    console.log({ error });
+
     // Nếu token hết hạn
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       const refreshToken = localStorage.getItem("refreshToken");
-      const userId = JSON.parse(localStorage.getItem("user")).id;
+      const userId = JSON.parse(localStorage.getItem("user"))?.id;
       if (refreshToken) {
         try {
           console.log(userId);

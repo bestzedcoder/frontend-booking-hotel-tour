@@ -11,6 +11,8 @@ import VerifyAccountPage from "./pages/VerifyAccount";
 import FooterPage from "./pages/Footer";
 import { PublicLayout } from "./layouts/PublicLayout";
 import ProfilePage from "./pages/Profile";
+import UserList from "./pages/admin/UserList";
+import EditUserPage from "./pages/admin/EditUser";
 
 function App() {
   return (
@@ -60,6 +62,8 @@ function App() {
               }
             >
               <Route index element={<AdminDashboard />} />
+              <Route path="users" element={<UserList />} />
+              <Route path="users/:id/edit" element={<EditUserPage />} />
             </Route>
 
             <Route path="/forbidden" element={<ForbiddenPage />} />

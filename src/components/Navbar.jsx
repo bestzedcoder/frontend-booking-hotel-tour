@@ -1,76 +1,164 @@
 import React from "react";
 import { useAuth } from "../hooks/useAuth";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [open, setOpen] = React.useState(false);
   const { user, logout } = useAuth();
 
   return (
-    <nav className="flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 border-b border-gray-300 bg-white relative transition-all">
+    <nav className="flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
       {/* Logo */}
-      <a href="/" className="font-bold text-indigo-600 text-xl">
-        MyApp
-      </a>
+      <Link
+        to="/"
+        className="font-bold text-2xl text-indigo-600 tracking-wide hover:text-indigo-700 transition"
+      >
+        TravelMate
+      </Link>
 
       {/* Desktop Menu */}
-      <div className="hidden sm:flex items-center gap-8">
+      <div className="hidden md:flex items-center gap-8 text-gray-700 font-medium">
+        <Link to="/" className="hover:text-indigo-600 transition">
+          Trang chủ
+        </Link>
+        <Link to="/hotels" className="hover:text-indigo-600 transition">
+          Khách sạn
+        </Link>
+        <Link to="/tours" className="hover:text-indigo-600 transition">
+          Tour du lịch
+        </Link>
+        <Link to="/contact" className="hover:text-indigo-600 transition">
+          Liên hệ
+        </Link>
+
         {user ? (
-          <>
-            <a href="/">Home</a>
-            <a href="/profile">Profile</a>
-            <a href="/secret">Secret</a>
+          <div className="flex items-center gap-4">
+            <Link
+              to="/profile"
+              className="hover:text-indigo-600 transition flex items-center gap-2"
+            >
+              <img
+                src={
+                  user.urlImage ??
+                  "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                }
+                alt="user"
+                className="w-6 h-6 rounded-full"
+              />
+              <span>{user.fullName || "Tài khoản"}</span>
+            </Link>
 
             <button
               onClick={logout}
-              className="cursor-pointer px-8 py-2 bg-gray-300 hover:bg-gray-400 transition rounded-full"
+              className="px-5 py-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600 transition"
             >
-              Logout
+              Đăng xuất
             </button>
-          </>
+          </div>
         ) : (
-          <a
-            href="/login"
-            className="cursor-pointer px-8 py-2 bg-indigo-500 hover:bg-indigo-600 transition text-white rounded-full"
+          <Link
+            to="/login"
+            className="px-5 py-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600 transition"
           >
-            Login
-          </a>
+            Đăng nhập
+          </Link>
         )}
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Button */}
       <button
         onClick={() => setOpen(!open)}
-        aria-label="Menu"
-        className="sm:hidden"
+        className="md:hidden focus:outline-none"
       >
-        <svg width="21" height="15" viewBox="0 0 21 15" fill="none">
-          <rect width="21" height="1.5" rx=".75" fill="#426287" />
-          <rect x="8" y="6" width="13" height="1.5" rx=".75" fill="#426287" />
-          <rect x="6" y="13" width="15" height="1.5" rx=".75" fill="#426287" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-6 w-6 text-indigo-600"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          {open ? (
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          ) : (
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
+          )}
         </svg>
       </button>
 
+      {/* Mobile Dropdown */}
       {open && (
-        <div className="absolute top-[60px] left-0 w-full bg-white shadow-md py-4 flex-col items-start gap-2 px-5 text-sm md:hidden">
+        <div className="absolute top-[70px] left-0 w-full bg-white shadow-md py-4 flex flex-col items-start gap-3 px-6 text-gray-700 font-medium md:hidden">
+          <Link
+            to="/"
+            onClick={() => setOpen(false)}
+            className="hover:text-indigo-600 transition"
+          >
+            Trang chủ
+          </Link>
+          <Link
+            to="/hotels"
+            onClick={() => setOpen(false)}
+            className="hover:text-indigo-600 transition"
+          >
+            Khách sạn
+          </Link>
+          <Link
+            to="/tours"
+            onClick={() => setOpen(false)}
+            className="hover:text-indigo-600 transition"
+          >
+            Tour du lịch
+          </Link>
+          <Link
+            to="/contact"
+            onClick={() => setOpen(false)}
+            className="hover:text-indigo-600 transition"
+          >
+            Liên hệ
+          </Link>
+
           {user ? (
             <>
-              <a href="/">Home</a>
-              <a href="/profile">Profile</a>
-              <a href="/secret">Secret</a>
-              <button
-                onClick={logout}
-                className="cursor-pointer px-6 py-2 mt-2 bg-gray-300 hover:bg-gray-400 transition rounded-full text-sm"
+              <Link
+                to="/profile"
+                onClick={() => setOpen(false)}
+                className="hover:text-indigo-600 transition flex items-center gap-2"
               >
-                Logout
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                  alt="user"
+                  className="w-5 h-5 rounded-full"
+                />
+                <span>{user.fullName || "Tài khoản"}</span>
+              </Link>
+              <button
+                onClick={() => {
+                  logout();
+                  setOpen(false);
+                }}
+                className="w-full text-left px-4 py-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600 transition mt-2"
+              >
+                Đăng xuất
               </button>
             </>
           ) : (
-            <a
-              href="/login"
-              className="cursor-pointer px-6 py-2 mt-2 bg-indigo-500 hover:bg-indigo-600 transition text-white rounded-full text-sm"
+            <Link
+              to="/login"
+              onClick={() => setOpen(false)}
+              className="w-full text-center px-4 py-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600 transition mt-2"
             >
-              Login
-            </a>
+              Đăng nhập
+            </Link>
           )}
         </div>
       )}
