@@ -1,34 +1,89 @@
 import React from "react";
 import { useAuth } from "../hooks/useAuth";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
+import { FaHotel, FaSuitcase, FaBook, FaPhone, FaHome } from "react-icons/fa";
 
 const Navbar = () => {
   const [open, setOpen] = React.useState(false);
   const { user, logout } = useAuth();
+  const location = useLocation();
+
+  const isActive = (path) => location.pathname === path;
 
   return (
     <nav className="flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
       {/* Logo */}
       <Link
         to="/"
-        className="font-bold text-2xl text-indigo-600 tracking-wide hover:text-indigo-700 transition"
+        className="flex items-center gap-2 font-bold text-2xl text-indigo-600 tracking-wide hover:text-indigo-700 transition"
       >
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/201/201623.png"
+          alt="logo"
+          className="w-8 h-8"
+        />
         TravelMate
       </Link>
 
       {/* Desktop Menu */}
       <div className="hidden md:flex items-center gap-8 text-gray-700 font-medium">
-        <Link to="/" className="hover:text-indigo-600 transition">
-          Trang chủ
+        <Link
+          to="/"
+          className={`flex items-center gap-1 ${
+            isActive("/")
+              ? "text-indigo-600 border-b-2 border-indigo-600"
+              : "hover:text-indigo-600"
+          } transition pb-1`}
+        >
+          <FaHome /> Trang chủ
         </Link>
-        <Link to="/hotels" className="hover:text-indigo-600 transition">
-          Khách sạn
-        </Link>
-        <Link to="/tours" className="hover:text-indigo-600 transition">
-          Tour du lịch
-        </Link>
-        <Link to="/contact" className="hover:text-indigo-600 transition">
-          Liên hệ
+
+        {user && (
+          <>
+            <Link
+              to="/hotels"
+              className={`flex items-center gap-1 ${
+                isActive("/hotels")
+                  ? "text-indigo-600 border-b-2 border-indigo-600"
+                  : "hover:text-indigo-600"
+              } transition pb-1`}
+            >
+              <FaHotel /> Khách sạn
+            </Link>
+
+            <Link
+              to="/tours"
+              className={`flex items-center gap-1 ${
+                isActive("/tours")
+                  ? "text-indigo-600 border-b-2 border-indigo-600"
+                  : "hover:text-indigo-600"
+              } transition pb-1`}
+            >
+              <FaSuitcase /> Tour du lịch
+            </Link>
+
+            <Link
+              to="/bookings"
+              className={`flex items-center gap-1 ${
+                isActive("/bookings")
+                  ? "text-indigo-600 border-b-2 border-indigo-600"
+                  : "hover:text-indigo-600"
+              } transition pb-1`}
+            >
+              <FaBook /> Booking
+            </Link>
+          </>
+        )}
+
+        <Link
+          to="/contact"
+          className={`flex items-center gap-1 ${
+            isActive("/contact")
+              ? "text-indigo-600 border-b-2 border-indigo-600"
+              : "hover:text-indigo-600"
+          } transition pb-1`}
+        >
+          <FaPhone /> Liên hệ
         </Link>
 
         {user ? (
@@ -101,30 +156,53 @@ const Navbar = () => {
           <Link
             to="/"
             onClick={() => setOpen(false)}
-            className="hover:text-indigo-600 transition"
+            className={`flex items-center gap-2 ${
+              isActive("/") ? "text-indigo-600 font-semibold" : ""
+            }`}
           >
-            Trang chủ
+            <FaHome /> Trang chủ
           </Link>
-          <Link
-            to="/hotels"
-            onClick={() => setOpen(false)}
-            className="hover:text-indigo-600 transition"
-          >
-            Khách sạn
-          </Link>
-          <Link
-            to="/tours"
-            onClick={() => setOpen(false)}
-            className="hover:text-indigo-600 transition"
-          >
-            Tour du lịch
-          </Link>
+
+          {user && (
+            <>
+              <Link
+                to="/hotels"
+                onClick={() => setOpen(false)}
+                className={`flex items-center gap-2 ${
+                  isActive("/hotels") ? "text-indigo-600 font-semibold" : ""
+                }`}
+              >
+                <FaHotel /> Khách sạn
+              </Link>
+              <Link
+                to="/tours"
+                onClick={() => setOpen(false)}
+                className={`flex items-center gap-2 ${
+                  isActive("/tours") ? "text-indigo-600 font-semibold" : ""
+                }`}
+              >
+                <FaSuitcase /> Tour du lịch
+              </Link>
+              <Link
+                to="/bookings"
+                onClick={() => setOpen(false)}
+                className={`flex items-center gap-2 ${
+                  isActive("/bookings") ? "text-indigo-600 font-semibold" : ""
+                }`}
+              >
+                <FaBook /> Booking
+              </Link>
+            </>
+          )}
+
           <Link
             to="/contact"
             onClick={() => setOpen(false)}
-            className="hover:text-indigo-600 transition"
+            className={`flex items-center gap-2 ${
+              isActive("/contact") ? "text-indigo-600 font-semibold" : ""
+            }`}
           >
-            Liên hệ
+            <FaPhone /> Liên hệ
           </Link>
 
           {user ? (
@@ -132,7 +210,7 @@ const Navbar = () => {
               <Link
                 to="/profile"
                 onClick={() => setOpen(false)}
-                className="hover:text-indigo-600 transition flex items-center gap-2"
+                className="flex items-center gap-2 mt-2"
               >
                 <img
                   src="https://cdn-icons-png.flaticon.com/512/149/149071.png"

@@ -32,7 +32,6 @@ axiosClient.interceptors.response.use(
       const userId = JSON.parse(localStorage.getItem("user"))?.id;
       if (refreshToken) {
         try {
-          console.log(userId);
           const res = await axios.post(
             "http://localhost:8080/api/auth/refresh",
             { userId, refreshToken }

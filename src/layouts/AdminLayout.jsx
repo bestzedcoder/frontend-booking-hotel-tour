@@ -1,20 +1,27 @@
 import { Outlet } from "react-router-dom";
-import Sidebar from "../pages/admin/Sidebar";
-import Navbar from "../pages/admin/Navbar";
+import { AdminSidebar } from "../pages/admin/AdminSidebar";
+import { AdminNavbar } from "../pages/admin/AdminNavbar";
 
-export default function AdminLayout() {
+// Component chính: AdminLayout
+export const AdminLayout = ({ children }) => {
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <Sidebar />
+      <AdminSidebar />
 
-      {/* Main content */}
-      <div className="flex flex-col flex-1">
-        <Navbar />
-        <main className="flex-1 overflow-y-auto p-6">
-          <Outlet />
+      {/* Main content area */}
+      <div className="flex-1 md:ml-64 flex flex-col">
+        {/* Navbar - Đã được chỉnh sửa để sử dụng logic auth và dropdown hoàn chỉnh */}
+        <AdminNavbar />
+
+        {/* Nội dung chính của trang */}
+        <main className="flex-1 p-6 md:p-8 mt-16 overflow-y-auto">
+          {children || <Outlet />}{" "}
+          {/* Render children hoặc Outlet cho nested routes */}
         </main>
       </div>
     </div>
   );
-}
+};
+
+export default AdminLayout;

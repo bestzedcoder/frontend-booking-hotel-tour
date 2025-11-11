@@ -48,7 +48,7 @@ export default function ProfilePage() {
 
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
-    setPasswords({ ...passwords, [name]: value });
+    setPasswords({ ...passwords, [name]: value.trim() });
   };
 
   const handleAvatarChange = (e) => {

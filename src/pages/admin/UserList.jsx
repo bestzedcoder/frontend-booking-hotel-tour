@@ -29,13 +29,14 @@ const SkeletonRow = () => (
   </tr>
 );
 
-const UserList = () => {
+export default function UserList() {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(null); // 👈 user đang chọn xoá
   const { callApi } = useApi();
 
   const fetchUsers = useCallback(async () => {
@@ -52,13 +53,23 @@ const UserList = () => {
     }
   }, [page, limit, callApi]);
 
-  // ✅ Gọi khi page hoặc limit thay đổi
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
   const handlePrev = () => page > 1 && setPage(page - 1);
   const handleNext = () => page < totalPages && setPage(page + 1);
+
+  const handleDelete = async (id) => {
+    const response = await callApi("delete", `users/${id}`);
+    if (!response.success) {
+      alert(response.message);
+      return;
+    }
+    alert(response.message);
+    setConfirmDelete(null);
+    fetchUsers();
+  };
 
   return (
     <div className="p-8">
@@ -145,20 +156,22 @@ const UserList = () => {
                   <td className="px-6 py-4">
                     <StatusBadge active={user.active} />
                   </td>
-                  <td className="px-6 py-4 text-right space-x-3">
-                    <Link
-                      to={`/admin/users/${user.id}/edit`}
-                      className="text-blue-600 hover:text-blue-800 transition flex items-center gap-1"
-                    >
-                      ✏️
-                      <span>Edit</span>
-                    </Link>
-                    <button
-                      className="text-red-600 hover:text-red-800 transition"
-                      onClick={() => alert(`Delete ${user.fullName}`)}
-                    >
-                      🗑️
-                    </button>
+                  <td className="px-6 py-4 text-right">
+                    <div className="flex justify-end items-center gap-3">
+                      <Link
+                        to={`/admin/users/${user.id}/edit`}
+                        className="flex items-center gap-2 bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg font-medium hover:bg-blue-100 hover:shadow transition-all duration-200"
+                      >
+                        ✏️ <span>Edit</span>
+                      </Link>
+
+                      <button
+                        onClick={() => setConfirmDelete(user)}
+                        className="flex items-center gap-2 bg-red-50 text-red-600 px-3 py-1.5 rounded-lg font-medium hover:bg-red-100 hover:shadow transition-all duration-200"
+                      >
+                        🗑️ <span>Delete</span>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -198,6 +211,40 @@ const UserList = () => {
           </button>
         </div>
       </div>
+
+      {/* ✅ Modal xác nhận xoá */}
+      {confirmDelete && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl shadow-xl w-[90%] max-w-sm text-center">
+            <h2 className="text-lg font-semibold text-gray-800 mb-2">
+              Xác nhận xoá người dùng
+            </h2>
+            <p className="text-gray-600 mb-4">
+              Bạn có chắc chắn muốn xoá{" "}
+              <span className="font-semibold text-gray-800">
+                {confirmDelete.fullName}
+              </span>{" "}
+              không?
+            </p>
+
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={() => handleDelete(confirmDelete.id)}
+                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition"
+              >
+                Xoá
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showModal && (
         <CreateUserModal
           onClose={() => setShowModal(false)}
@@ -206,6 +253,4 @@ const UserList = () => {
       )}
     </div>
   );
-};
-
-export default UserList;
+}

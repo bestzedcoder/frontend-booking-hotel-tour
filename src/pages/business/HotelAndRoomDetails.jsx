@@ -1,0 +1,333 @@
+// HotelAndRoomDetail.jsx
+
+import { useState, useEffect, useMemo, useCallback } from "react";
+import RoomListTable from "./RoomListTable";
+import RoomFormModal from "./RoomFormModal";
+import RoomFilter from "./RoomFilter";
+// 🆕 Import HotelEditModal
+import HotelEditModal from "./HotelEditModal";
+// 🔑 Import đầy đủ constants và mock data
+import {
+  RoomStatus,
+  RoomType,
+  STAR_RATINGS,
+  VIETNAM_PROVINCES,
+} from "../../utils/contain";
+import { useApi } from "../../hooks/useApi";
+import { useNavigate, useParams } from "react-router-dom";
+import HotelDetailSection from "./HotelDetailSection";
+
+// 🚨 GIẢ LẬP API CALL: Thay thế bằng hàm callApi thực tế của bạn
+const fakeCallApi = (endpoint, data) =>
+  new Promise((resolve) =>
+    setTimeout(() => {
+      console.log(`[API Call] Endpoint: ${endpoint}`, data);
+      resolve({ success: true, data: data || mockHotelData });
+    }, 800)
+  );
+
+const ITEMS_PER_PAGE = 10;
+
+const HotelAndRoomDetail = () => {
+  // ------------------------------------
+  // 1. STATE MANAGEMENT
+  // ------------------------------------
+  const [hotelData, setHotelData] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isHotelModalOpen, setIsHotelModalOpen] = useState(false);
+  const [editingRoom, setEditingRoom] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filterType, setFilterType] = useState("ALL");
+  const [filterStatus, setFilterStatus] = useState("ALL");
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const { id } = useParams();
+  const { callApi } = useApi();
+  const navigate = useNavigate();
+
+  const handleGoBack = () => {
+    navigate(-1);
+  };
+
+  // ------------------------------------
+  // 2. DATA FETCHING (API)
+  // ------------------------------------
+
+  // 🔑 Hàm Fetch API
+  const fetchHotelData = useCallback(async () => {
+    setIsLoading(true);
+    const response = await callApi("get", `/hotels/${id}`);
+    if (!response.success) {
+      alert(response.message);
+      setIsLoading(false);
+      return;
+    }
+    setHotelData(response.data);
+    setIsLoading(false);
+  }, [callApi, id]);
+
+  useEffect(() => {
+    fetchHotelData();
+  }, [fetchHotelData]);
+
+  // ------------------------------------
+  // 3. HOTEL EDIT API HANDLER
+  // ------------------------------------
+
+  const handleUpdateHotel = async (updatedData) => {
+    setIsSaving(true);
+    try {
+      const { newImages, oldImageUrls, ...hotelDetails } = updatedData;
+
+      // 1. Upload ảnh mới (Nếu có)
+      let uploadedImageUrls = [];
+      if (newImages && newImages.length > 0) {
+        // 🚨 GỌI API UPLOAD ẢNH THẬT SỰ Ở ĐÂY
+        // Ví dụ: const uploadResponse = await callApi('/api/upload-images', { method: 'POST', body: newImages });
+        // Giả lập trả về URL:
+        uploadedImageUrls = newImages.map(
+          (file) => `mock-url/${file.name}_${Date.now()}`
+        );
+      }
+
+      const finalImageUrls = [...oldImageUrls, ...uploadedImageUrls];
+
+      // 2. Chuẩn bị Payload cho API cập nhật hotel
+      const apiPayload = {
+        ...hotelDetails,
+        imageUrls: finalImageUrls,
+      };
+
+      // 🚨 GỌI API CẬP NHẬT THÔNG TIN HOTEL THẬT SỰ Ở ĐÂY
+      // Ví dụ: const response = await callApi('/api/hotel/update', { method: 'PUT', body: apiPayload });
+      const response = await fakeCallApi("/api/hotel/update", {
+        ...apiPayload,
+        rooms: hotelData.rooms,
+      });
+
+      if (response.success) {
+        // Cập nhật state cục bộ và đóng modal
+        setHotelData(response.data);
+        setIsHotelModalOpen(false);
+        alert("Cập nhật thông tin khách sạn thành công!");
+      }
+    } catch (error) {
+      console.error("Lỗi khi cập nhật khách sạn:", error);
+      alert("Cập nhật thất bại. Vui lòng thử lại.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // ------------------------------------
+  // 4. ROOM CRUD API HANDLERS
+  // ------------------------------------
+
+  // 🔑 Lưu ý: Sau khi CRUD phòng thành công, nên gọi lại fetchHotelData()
+  // Hoặc cập nhật state `setHotelData` bằng dữ liệu trả về từ API.
+
+  const handleAddRooms = async (newRoomData) => {
+    setIsSaving(true);
+    const response = await callApi("post", `/hotels/${id}/rooms`, newRoomData);
+    if (!response.success) {
+      alert(response.message);
+      setIsSaving(false);
+      return;
+    }
+    alert(response.message);
+    setIsModalOpen(false);
+    setIsSaving(false);
+    fetchHotelData();
+  };
+
+  const handleEditRoom = async (updatedRoom, roomId) => {
+    setIsSaving(true);
+    console.log({ updatedRoom, roomId });
+    const response = await callApi(
+      "put",
+      `/hotels/${id}/room/${roomId}`,
+      updatedRoom
+    );
+    if (!response.success) {
+      alert(response.message);
+      setIsSaving(false);
+      return;
+    }
+    alert(response.message);
+    setIsModalOpen(false);
+    setEditingRoom(null);
+    setIsSaving(false);
+    fetchHotelData();
+  };
+
+  const handleDeleteRoom = async (roomId) => {
+    setIsSaving(true);
+    try {
+      // 🚨 GỌI API XÓA PHÒNG THẬT SỰ
+      // const response = await callApi(`/api/room/${roomId}`, { method: 'DELETE' });
+      // if (response.success) {
+      //     fetchHotelData();
+      // }
+
+      // Giữ logic mock tạm thời:
+      setHotelData((prevData) => {
+        /* ... logic cũ ... */
+      });
+      setIsSaving(false);
+    } catch (e) {
+      setIsSaving(false);
+    }
+  };
+
+  // ... openAddModal, openEditModal ...
+  const openAddModal = () => {
+    setEditingRoom(null);
+    setIsModalOpen(true);
+  };
+  const openEditModal = (room) => {
+    setEditingRoom(room);
+    setIsModalOpen(true);
+  };
+
+  // ------------------------------------
+  // 5. FILTERING & PAGINATION (Giữ nguyên)
+  // ------------------------------------
+  const filteredRooms = useMemo(() => {
+    if (!hotelData) return [];
+    let rooms = hotelData.rooms;
+    if (filterType !== "ALL") {
+      rooms = rooms.filter((room) => room.roomType === filterType);
+    }
+    if (filterStatus !== "ALL") {
+      rooms = rooms.filter((room) => room.status === filterStatus);
+    }
+    return rooms;
+  }, [hotelData, filterType, filterStatus]);
+
+  const totalRooms = filteredRooms.length;
+  const totalPages = Math.ceil(totalRooms / ITEMS_PER_PAGE);
+
+  const paginatedRooms = useMemo(() => {
+    if (filteredRooms.length === 0) return [];
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return filteredRooms.slice(startIndex, endIndex);
+  }, [filteredRooms, currentPage]);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
+  const handleFilterChange = (type, value) => {
+    setCurrentPage(1);
+    if (type === "type") {
+      setFilterType(value);
+    } else if (type === "status") {
+      setFilterStatus(value);
+    }
+  };
+
+  // ------------------------------------
+  // 6. CONDITIONAL RENDERING
+  // ------------------------------------
+  if (isLoading || !hotelData) {
+    return (
+      <div className="p-8 max-w-7xl mx-auto">
+        <div className="text-center py-10 text-xl font-medium text-gray-600">
+          {isLoading
+            ? "Đang tải dữ liệu khách sạn..."
+            : "Không tìm thấy dữ liệu khách sạn."}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-4 md:p-8 max-w-7xl mx-auto">
+      <div className="flex justify-between items-center mb-6 border-b pb-2">
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={handleGoBack}
+            className="bg-gray-200 text-gray-700 hover:bg-gray-300 font-bold py-2 px-4 rounded transition duration-150 shadow-sm flex items-center h-10"
+            title="Trở về trang trước"
+          >
+            &larr; Trở về
+          </button>
+          <h1 className="text-3xl font-bold text-gray-800">
+            🏨 Chi tiết Khách sạn & Quản lý Phòng
+          </h1>
+        </div>
+        <button
+          onClick={() => setIsHotelModalOpen(true)}
+          className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded transition duration-150 shadow-md h-10 flex items-center"
+        >
+          ⚙️ Chỉnh Sửa Khách sạn
+        </button>
+      </div>
+
+      <HotelDetailSection hotelData={hotelData} />
+      <hr className="my-8" />
+
+      <div className="mt-8">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-semibold text-gray-700">
+            Danh sách Phòng (Tìm thấy: **{totalRooms}**)
+          </h2>
+          <button
+            onClick={openAddModal}
+            disabled={isSaving}
+            className={`font-bold py-2 px-4 rounded transition duration-150 shadow-md ${
+              isSaving
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700 text-white"
+            }`}
+          >
+            ➕ Thêm Phòng Mới
+          </button>
+        </div>
+
+        <RoomFilter
+          filterType={filterType}
+          filterStatus={filterStatus}
+          onFilterChange={handleFilterChange}
+          roomTypes={Object.values(RoomType)}
+          roomStatuses={Object.values(RoomStatus)}
+        />
+
+        <RoomListTable
+          rooms={paginatedRooms}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          onEdit={openEditModal}
+          onDelete={handleDeleteRoom}
+        />
+      </div>
+
+      <RoomFormModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEditingRoom(null);
+        }}
+        isEditing={!!editingRoom}
+        initialData={editingRoom}
+        onCreate={handleAddRooms}
+        onUpdate={handleEditRoom}
+        isSaving={isSaving}
+      />
+
+      {/* 🆕 MODAL CHỈNH SỬA KHÁCH SẠN */}
+      <HotelEditModal
+        isOpen={isHotelModalOpen}
+        onClose={() => setIsHotelModalOpen(false)}
+        initialData={hotelData}
+        onSave={handleUpdateHotel}
+        starRatings={STAR_RATINGS.filter((r) => r.value > 0)}
+        provinces={VIETNAM_PROVINCES}
+        isSaving={isSaving}
+      />
+    </div>
+  );
+};
+
+export default HotelAndRoomDetail;
