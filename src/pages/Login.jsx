@@ -20,6 +20,13 @@ export default function LoginPage() {
     navigate("/");
   };
 
+  const handleLoginGoogle = async (e) => {
+    // setIsLoading(true);
+    console.log("google");
+    window.location.href =
+      "http://localhost:8080/api/oauth2/authorization/google";
+  };
+
   return (
     <AuthForm
       title="Sign In"
@@ -35,6 +42,8 @@ export default function LoginPage() {
         )
       }
       disabled={isLoading}
+      isGoogle={true}
+      onGoogleClick={handleLoginGoogle}
       fields={[
         {
           label: "Username",

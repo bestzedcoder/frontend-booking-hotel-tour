@@ -76,47 +76,55 @@ const HotelAndRoomDetail = () => {
 
   const handleUpdateHotel = async (updatedData) => {
     setIsSaving(true);
-    try {
-      const { newImages, oldImageUrls, ...hotelDetails } = updatedData;
+    const { newImages, ...hotelDetails } = updatedData;
 
-      // 1. Upload ảnh mới (Nếu có)
-      let uploadedImageUrls = [];
-      if (newImages && newImages.length > 0) {
-        // 🚨 GỌI API UPLOAD ẢNH THẬT SỰ Ở ĐÂY
-        // Ví dụ: const uploadResponse = await callApi('/api/upload-images', { method: 'POST', body: newImages });
-        // Giả lập trả về URL:
-        uploadedImageUrls = newImages.map(
-          (file) => `mock-url/${file.name}_${Date.now()}`
-        );
-      }
+    // 2. Chuẩn bị Payload cho API cập nhật hotel
 
-      const finalImageUrls = [...oldImageUrls, ...uploadedImageUrls];
+    const data = {
+      hotelName: hotelDetails.name,
+      hotelStar: STAR_RATINGS.find((s) => s.value === hotelDetails.stars)
+        .element,
+      hotelCity: hotelDetails.province,
+      hotelAddress: hotelDetails.address,
+      hotelDescription: hotelDetails.description,
+      imagesOld: hotelDetails.oldImageUrls,
+    };
 
-      // 2. Chuẩn bị Payload cho API cập nhật hotel
-      const apiPayload = {
-        ...hotelDetails,
-        imageUrls: finalImageUrls,
-      };
+    console.log({ data, newImages });
 
-      // 🚨 GỌI API CẬP NHẬT THÔNG TIN HOTEL THẬT SỰ Ở ĐÂY
-      // Ví dụ: const response = await callApi('/api/hotel/update', { method: 'PUT', body: apiPayload });
-      const response = await fakeCallApi("/api/hotel/update", {
-        ...apiPayload,
-        rooms: hotelData.rooms,
-      });
+    const formData = new FormData();
 
-      if (response.success) {
-        // Cập nhật state cục bộ và đóng modal
-        setHotelData(response.data);
-        setIsHotelModalOpen(false);
-        alert("Cập nhật thông tin khách sạn thành công!");
-      }
-    } catch (error) {
-      console.error("Lỗi khi cập nhật khách sạn:", error);
-      alert("Cập nhật thất bại. Vui lòng thử lại.");
-    } finally {
+    // Chuyển object hotelData thành JSON string và gắn vào field "data"
+    formData.append(
+      "data",
+      new Blob(
+        [
+          JSON.stringify({
+            ...data,
+          }),
+        ],
+        { type: "application/json" }
+      )
+    );
+
+    // Thêm tất cả ảnh
+    newImages.forEach((file) => {
+      formData.append("images", file); // backend nhận MultipartFile[]
+    });
+
+    // Gọi API
+    const response = await callApi("put", `/hotels/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+    if (!response.success) {
+      alert(response.message);
       setIsSaving(false);
+      return;
     }
+    alert("Cập nhật thông tin khách sạn thành công!");
+    setIsHotelModalOpen(false);
+    setIsSaving(false);
+    fetchHotelData();
   };
 
   // ------------------------------------

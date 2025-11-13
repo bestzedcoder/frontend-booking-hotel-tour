@@ -60,6 +60,7 @@ export default function RegisterPage() {
         )
       }
       disabled={isLoading}
+      isGoogle={false}
       fields={[
         {
           label: "Username",

@@ -1,5 +1,3 @@
-// HotelEditModal.jsx
-
 import { useState, useEffect, useMemo } from "react";
 
 const HotelEditModal = ({
@@ -14,9 +12,9 @@ const HotelEditModal = ({
   const [name, setName] = useState("");
   const [stars, setStars] = useState("");
   const [province, setProvince] = useState("");
-  // Mảng URL của ảnh cũ (đã có trên server)
+  const [address, setAddress] = useState("");
+  const [description, setDescription] = useState("");
   const [oldImageUrls, setOldImageUrls] = useState([]);
-  // Mảng File của ảnh mới (chưa upload)
   const [newImages, setNewImages] = useState([]);
 
   // 1. Cập nhật State khi Modal mở hoặc initialData thay đổi
@@ -28,6 +26,8 @@ const HotelEditModal = ({
       );
       setStars(found ? String(found.value) : "");
       setProvince(initialData.hotelCity || "");
+      setAddress(initialData.hotelAddress || "");
+      setDescription(initialData.hotelDescription || "");
       setOldImageUrls(initialData.hotelImages || []);
       setNewImages([]); // Reset ảnh mới khi mở modal mới
     }
@@ -75,9 +75,16 @@ const HotelEditModal = ({
       name,
       stars: Number(stars),
       province,
+      address,
+      description,
       oldImageUrls,
-      newImages, // Truyền mảng File (có chứa URL tạm thời)
+      newImages,
     };
+
+    if (newImages.length < 1 && oldImageUrls.length < 1) {
+      alert("Phải có ít nhất 1 ảnh");
+      return;
+    }
 
     onSave(updatedData);
   };
@@ -105,7 +112,7 @@ const HotelEditModal = ({
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto overflow-x-hidden">
         <div className="p-6 border-b flex justify-between items-center">
           <h2 className="text-2xl font-semibold text-gray-800">
             ⚙️ Chỉnh Sửa Khách sạn
@@ -178,6 +185,34 @@ const HotelEditModal = ({
             </div>
           </div>
 
+          {/* Trường Địa Chỉ */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Địa Chỉ
+            </label>
+            <input
+              type="text"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Nhập địa chỉ khách sạn"
+            />
+          </div>
+
+          {/* Trường Mô Tả */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Mô Tả
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 resize-vertical"
+              placeholder="Nhập mô tả chi tiết về khách sạn"
+              rows={4}
+            />
+          </div>
+
           {/* Quản lý Ảnh */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -199,7 +234,7 @@ const HotelEditModal = ({
                   className="relative aspect-video rounded-lg overflow-hidden border border-gray-200 shadow-sm"
                 >
                   <img
-                    src={img.url}
+                    src={img.url || "/placeholder.svg"}
                     alt="Ảnh khách sạn"
                     className="w-full h-full object-cover"
                   />
@@ -227,6 +262,7 @@ const HotelEditModal = ({
               ))}
             </div>
           </div>
+
           {/* Nút Lưu */}
           <div className="pt-4 border-t flex justify-end">
             <button

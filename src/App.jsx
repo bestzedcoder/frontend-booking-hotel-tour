@@ -18,6 +18,7 @@ import { BusinessDashboard } from "./pages/business/BusinessDashboard";
 import HotelManagementPage from "./pages/business/HotelManagement";
 import HotelManagement from "./pages/admin/HotelManagement";
 import HotelAndRoomDetail from "./pages/business/HotelAndRoomDetails";
+import OAuthSuccess from "./pages/OAuthSuccess";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
             </PublicLayout>
           }
         />
+        <Route path="/oauth2/success" element={<OAuthSuccess />} />
         <Route
           path="/verify-account"
           element={

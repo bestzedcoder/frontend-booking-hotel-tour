@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useApi } from "../../hooks/useApi";
 import { STAR_RATINGS, VIETNAM_PROVINCES } from "../../utils/contain";
 
@@ -6,11 +6,13 @@ const HotelManagement = () => {
   const [filterName, setFilterName] = useState("");
   const [filterCity, setFilterCity] = useState("");
   const [filterStar, setFilterStar] = useState("");
+  const [filterOwner, setFilterOwner] = useState("");
 
   const [searchParams, setSearchParams] = useState({
     name: "",
     city: "",
     star: "",
+    owner: "",
     page: 1,
   });
 
@@ -21,7 +23,6 @@ const HotelManagement = () => {
 
   const { callApi } = useApi();
 
-  // Get unique cities and stars for filter options
   const cities = useMemo(() => {
     return VIETNAM_PROVINCES.sort();
   }, []);
@@ -34,43 +35,44 @@ const HotelManagement = () => {
 
   const fetchHotels = async () => {
     setLoading(true);
-    try {
-      console.log({ searchParams });
-      const params = new URLSearchParams({
-        page: searchParams.page.toString(),
-        limit: "10",
-        ...(searchParams.name && { hotelName: searchParams.name }),
-        ...(searchParams.city && { city: searchParams.city }),
-        ...(searchParams.star && {
-          hotelStar: STAR_RATINGS.find(
-            (s) => String(s.value) === searchParams.star
-          ).element,
-        }),
-      });
+    const params = new URLSearchParams({
+      page: searchParams.page.toString(),
+      limit: "10",
+      ...(searchParams.name && { hotelName: searchParams.name }),
+      ...(searchParams.city && { city: searchParams.city }),
+      ...(searchParams.star && {
+        hotelStar: STAR_RATINGS.find(
+          (s) => String(s.value) === searchParams.star
+        ).element,
+      }),
+      ...(searchParams.owner && { owner: searchParams.owner }),
+    });
 
-      console.log(searchParams);
+    console.log(searchParams);
 
-      const response = await callApi(
+    let response;
+    if (searchParams.owner) {
+      response = await callApi(
         "get",
-        `/hotels/search?${params.toString()}`
+        `/hotels/admin/search?${params.toString()}`
       );
-      console.log({ response });
-      if (response.data) {
-        setPageData(response.data);
-        setHotels(response.data.result || []);
-      }
-    } catch (err) {
-      console.error("[v0] API Error:", err);
-    } finally {
-      setLoading(false);
+    } else {
+      response = await callApi("get", `/hotels/search?${params.toString()}`);
     }
+    if (!response.success) {
+      alert(response.message);
+      setLoading(false);
+      return;
+    }
+    setPageData(response.data);
+    setHotels(response.data.result);
+    setLoading(false);
   };
 
   useEffect(() => {
     fetchHotels();
   }, [searchParams]);
 
-  // Delete hotel handler
   const handleDelete = async (hotelId) => {
     setDeleteConfirm(hotelId);
   };
@@ -97,10 +99,12 @@ const HotelManagement = () => {
     setFilterName("");
     setFilterCity("");
     setFilterStar("");
+    setFilterOwner("");
     setSearchParams({
       name: "",
       city: "",
       star: "",
+      owner: "",
       page: 1,
     });
   };
@@ -110,6 +114,7 @@ const HotelManagement = () => {
       name: filterName,
       city: filterCity,
       star: filterStar,
+      owner: filterOwner,
       page: 1,
     });
   };
@@ -130,7 +135,6 @@ const HotelManagement = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
             Hotel Management
@@ -140,7 +144,6 @@ const HotelManagement = () => {
           </p>
         </div>
 
-        {/* Stats Card */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
             <p className="text-slate-600 dark:text-slate-400 text-sm font-medium mb-2">
@@ -168,7 +171,6 @@ const HotelManagement = () => {
           </div>
         </div>
 
-        {/* Filters Section */}
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
@@ -192,8 +194,7 @@ const HotelManagement = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Search by name */}
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Hotel Name
@@ -208,7 +209,6 @@ const HotelManagement = () => {
               />
             </div>
 
-            {/* Filter by city */}
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 City
@@ -228,7 +228,6 @@ const HotelManagement = () => {
               </select>
             </div>
 
-            {/* Filter by star */}
             <div>
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Star Rating
@@ -251,7 +250,20 @@ const HotelManagement = () => {
               </select>
             </div>
 
-            {/* Loading indicator */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Owner
+              </label>
+              <input
+                type="text"
+                placeholder="Search by owner username..."
+                value={filterOwner}
+                onChange={(e) => setFilterOwner(e.target.value)}
+                disabled={loading}
+                className="w-full px-4 py-2 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-500 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50"
+              />
+            </div>
+
             <div className="flex items-end">
               {loading ? (
                 <div className="w-full px-4 py-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg flex items-center gap-2">
@@ -292,7 +304,6 @@ const HotelManagement = () => {
           </div>
         </div>
 
-        {/* Hotels Grid */}
         {!loading && hotels.length > 0 ? (
           <div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -305,7 +316,6 @@ const HotelManagement = () => {
                       : ""
                   }`}
                 >
-                  {/* Image */}
                   <div className="h-48 bg-slate-200 dark:bg-slate-700 overflow-hidden">
                     <img
                       src={hotel.imageUrl || "/placeholder.svg"}
@@ -314,7 +324,6 @@ const HotelManagement = () => {
                     />
                   </div>
 
-                  {/* Content */}
                   <div className="p-5">
                     <div className="flex items-start justify-between mb-3">
                       <h3 className="text-lg font-semibold text-slate-900 dark:text-white pr-2 flex-1">
@@ -325,12 +334,10 @@ const HotelManagement = () => {
                       </span>
                     </div>
 
-                    {/* Star Rating */}
                     <div className="mb-3">
                       <StarRating star={hotel.star} />
                     </div>
 
-                    {/* City & Address */}
                     <div className="space-y-2 mb-4">
                       <p className="text-sm text-slate-600 dark:text-slate-400">
                         <span className="font-medium text-slate-700 dark:text-slate-300">
@@ -346,12 +353,10 @@ const HotelManagement = () => {
                       </p>
                     </div>
 
-                    {/* Description */}
                     <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4">
                       {hotel.description}
                     </p>
 
-                    {/* Delete Button */}
                     <button
                       onClick={() => handleDelete(hotel.hotelId)}
                       disabled={deleteLoading}
@@ -407,7 +412,6 @@ const HotelManagement = () => {
               ))}
             </div>
 
-            {/* Pagination */}
             <div className="flex items-center justify-between bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
               <p className="text-sm text-slate-600 dark:text-slate-400">
                 Showing page{" "}
@@ -537,7 +541,7 @@ const HotelManagement = () => {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={1.5}
-                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 00-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
               />
             </svg>
             <p className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
@@ -553,14 +557,12 @@ const HotelManagement = () => {
       {deleteConfirm !== null && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full border border-slate-200 dark:border-slate-700 transform transition-all">
-            {/* Header */}
             <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700">
               <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                 Confirm Delete
               </h3>
             </div>
 
-            {/* Body */}
             <div className="px-6 py-4">
               <p className="text-slate-700 dark:text-slate-300 mb-2">
                 Are you sure you want to delete this hotel?
@@ -571,7 +573,6 @@ const HotelManagement = () => {
               </p>
             </div>
 
-            {/* Footer */}
             <div className="px-6 py-4 border-t border-slate-200 dark:border-slate-700 flex gap-3">
               <button
                 onClick={cancelDelete}
