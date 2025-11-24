@@ -8,7 +8,7 @@ export const BusinessSidebar = () => {
     { name: "Tổng quan", icon: Briefcase, path: "/business" },
     { name: "Quản lý Khách sạn", icon: Hotel, path: "/business/my-hotels" },
     { name: "Quản lý Tour", icon: Plane, path: "/business/my-tours" },
-    { name: "Lịch đặt chỗ", icon: Calendar, path: "/business/bookings" },
+    { name: "Lịch đặt chỗ", icon: Calendar, path: "/business/my-bookings" },
     { name: "Doanh thu & TT", icon: DollarSign, path: "/business/finance" },
   ];
 

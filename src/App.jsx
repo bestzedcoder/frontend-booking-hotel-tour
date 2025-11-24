@@ -19,6 +19,18 @@ import HotelManagementPage from "./pages/business/HotelManagement";
 import HotelManagement from "./pages/admin/HotelManagement";
 import HotelAndRoomDetail from "./pages/business/HotelAndRoomDetails";
 import OAuthSuccess from "./pages/OAuthSuccess";
+import HotelSearchPage from "./pages/customer/Hotel";
+import HotelDetailsPage from "./pages/customer/HotelDetails";
+import { TourManagementPage } from "./pages/business/TourManagement";
+import { TourCreatingPage } from "./pages/business/TourCreatingPage";
+import { TourDetailsPage } from "./pages/business/TourDetailsPage";
+import { HotelBookingPage } from "./pages/customer/HotelBooking";
+import { BookingManagementPage } from "./pages/customer/BookingManagement";
+import PaymentResultPage from "./pages/customer/PaymentResult";
+import TourPage from "./pages/customer/Tour";
+import TourDetails from "./pages/customer/TourDetails";
+import TourBookingPage from "./pages/customer/TourBooking";
+import BookingManagementBusinessPage from "./pages/business/BookingManagement";
 
 function App() {
   return (
@@ -60,30 +72,18 @@ function App() {
 
         <Route path="/*" element={<CustomerLayout />}>
           <Route index element={<HomePage />} />
-          {/* <Route
-                path="/hotels"
-                element={
-                  <ProtectedRoute>
-                    <HotelsPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/tours"
-                element={
-                  <ProtectedRoute>
-                    <ToursPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/booking"
-                element={
-                  <ProtectedRoute>
-                    <BookingPage />
-                  </ProtectedRoute>
-                }
-              /> */}
+          <Route path="hotels" element={<HotelSearchPage />} />
+          <Route path="hotels/:id/details" element={<HotelDetailsPage />} />
+          <Route
+            path="hotels/:hotelId/room/:roomId/booking"
+            element={<HotelBookingPage />}
+          />
+          <Route path="tours" element={<TourPage />} />
+          <Route path="tours/:id/details" element={<TourDetails />} />
+          <Route path="tours/:id/booking" element={<TourBookingPage />} />
+          <Route path="bookings" element={<BookingManagementPage />} />
+          <Route path="payment/result" element={<PaymentResultPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
 
         <Route
@@ -98,6 +98,7 @@ function App() {
           <Route path="users" element={<UserList />} />
           <Route path="users/:id/edit" element={<EditUserPage />} />
           <Route path="hotels" element={<HotelManagement />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
 
         <Route
@@ -114,10 +115,17 @@ function App() {
             path="my-hotels/:id/details"
             element={<HotelAndRoomDetail />}
           />
+          <Route path="my-tours" element={<TourManagementPage />} />
+          <Route path="my-tours/create" element={<TourCreatingPage />} />
+          <Route path="my-tours/:id/details" element={<TourDetailsPage />} />
+          <Route
+            path="my-bookings"
+            element={<BookingManagementBusinessPage />}
+          />
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
 
         <Route path="/forbidden" element={<ForbiddenPage />} />
-        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
   );

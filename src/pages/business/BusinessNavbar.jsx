@@ -9,7 +9,8 @@ export const BusinessNavbar = () => {
 
   // Lấy thông tin người dùng
   const businessName = user?.fullName || "Đối tác Kinh doanh";
-  const avatar = user?.urlImage;
+  const avatar =
+    user?.urlImage ?? "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
   return (
     <nav className="fixed top-0 right-0 left-0 md:left-64 h-16 bg-white shadow-sm flex items-center justify-end px-6 z-40 border-b border-gray-100">

@@ -310,12 +310,14 @@ const HotelManagement = () => {
               {hotels.map((hotel) => (
                 <div
                   key={hotel.hotelId}
-                  className={`bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-shadow ${
+                  // Sử dụng flex-col và h-full/min-h-full để đảm bảo nút nằm ở cuối
+                  className={`flex flex-col bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden hover:shadow-md transition-shadow ${
                     deleteLoading && deleteConfirm === hotel.hotelId
                       ? "opacity-50 pointer-events-none"
                       : ""
                   }`}
                 >
+                  {/* Phần Ảnh - Giữ nguyên */}
                   <div className="h-48 bg-slate-200 dark:bg-slate-700 overflow-hidden">
                     <img
                       src={hotel.imageUrl || "/placeholder.svg"}
@@ -324,43 +326,49 @@ const HotelManagement = () => {
                     />
                   </div>
 
-                  <div className="p-5">
-                    <div className="flex items-start justify-between mb-3">
-                      <h3 className="text-lg font-semibold text-slate-900 dark:text-white pr-2 flex-1">
-                        {hotel.hotelName}
-                      </h3>
-                      <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-semibold rounded-full whitespace-nowrap ml-2">
-                        ID: {hotel.hotelId}
-                      </span>
-                    </div>
+                  {/* Phần Nội dung và Nút - ĐÃ CHỈNH SỬA */}
+                  <div className="p-5 flex flex-col flex-grow">
+                    {/* Nội dung chính (Title, ID, Star Rating, Info, Description) - Dùng flex-grow để đẩy nút xuống */}
+                    <div className="flex-grow">
+                      <div className="flex items-start justify-between mb-3">
+                        <h3 className="text-lg font-semibold text-slate-900 dark:text-white pr-2 flex-1">
+                          {hotel.hotelName}
+                        </h3>
+                        <span className="px-3 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-semibold rounded-full whitespace-nowrap ml-2">
+                          ID: {hotel.hotelId}
+                        </span>
+                      </div>
 
-                    <div className="mb-3">
-                      <StarRating star={hotel.star} />
-                    </div>
+                      <div className="mb-3">
+                        <StarRating star={hotel.star} />
+                      </div>
 
-                    <div className="space-y-2 mb-4">
-                      <p className="text-sm text-slate-600 dark:text-slate-400">
-                        <span className="font-medium text-slate-700 dark:text-slate-300">
-                          City:
-                        </span>{" "}
-                        {hotel.city}
+                      <div className="space-y-2 mb-4">
+                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                          <span className="font-medium text-slate-700 dark:text-slate-300">
+                            City:
+                          </span>{" "}
+                          {hotel.city}
+                        </p>
+                        <p className="text-sm text-slate-600 dark:text-slate-400 truncate">
+                          <span className="font-medium text-slate-700 dark:text-slate-300">
+                            Address:
+                          </span>{" "}
+                          {hotel.address}
+                        </p>
+                      </div>
+
+                      <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4">
+                        {hotel.description}
                       </p>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 truncate">
-                        <span className="font-medium text-slate-700 dark:text-slate-300">
-                          Address:
-                        </span>{" "}
-                        {hotel.address}
-                      </p>
                     </div>
 
-                    <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-4">
-                      {hotel.description}
-                    </p>
-
+                    {/* Nút Delete Hotel - Tự động nằm ở cuối nhờ flex-grow của div trên */}
                     <button
                       onClick={() => handleDelete(hotel.hotelId)}
                       disabled={deleteLoading}
-                      className={`w-full px-4 py-2 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-700 dark:text-red-400 font-medium rounded-lg transition-colors flex items-center justify-center gap-2 ${
+                      className={`w-full px-4 py-2 bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 text-red-700 dark:text-red-400 font-medium rounded-lg transition-colors flex items-center justify-center gap-2 mt-4 ${
+                        // Thêm mt-4 để tạo khoảng cách
                         deleteLoading ? "opacity-50 cursor-not-allowed" : ""
                       }`}
                     >

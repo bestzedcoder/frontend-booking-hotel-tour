@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { STAR_RATINGS } from "../../utils/contain";
+import TruncatedDescription from "./TruncatedDescription";
 
 const HotelDetailSection = ({ hotelData }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -86,9 +87,7 @@ const HotelDetailSection = ({ hotelData }) => {
         </div>
 
         <h3 className="text-lg font-semibold mt-4 mb-2 border-t pt-3">Mô tả</h3>
-        <p className="text-gray-700 text-sm leading-relaxed">
-          {hotelData.hotelDescription}
-        </p>
+        <TruncatedDescription description={hotelData.hotelDescription} />
       </div>
     </div>
   );

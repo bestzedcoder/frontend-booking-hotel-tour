@@ -99,7 +99,7 @@ const HotelEditModal = ({
 
     // Sử dụng URL đã được lưu trong đối tượng File
     const newPreviews = newImages.map((file) => ({
-      id: file.url, // Sử dụng URL tạm thời làm key
+      id: file.url,
       url: file.url,
       isNew: true,
       file,

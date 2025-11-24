@@ -143,7 +143,7 @@ const CreateHotelModal = ({
 
       // Thêm tất cả ảnh
       hotel.images.forEach((file) => {
-        formData.append("images", file); // backend nhận MultipartFile[]
+        formData.append("images", file);
       });
 
       // Gọi API

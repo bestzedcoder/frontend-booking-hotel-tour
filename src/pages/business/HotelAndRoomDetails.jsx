@@ -109,7 +109,7 @@ const HotelAndRoomDetail = () => {
 
     // Thêm tất cả ảnh
     newImages.forEach((file) => {
-      formData.append("images", file); // backend nhận MultipartFile[]
+      formData.append("images", file);
     });
 
     // Gọi API
