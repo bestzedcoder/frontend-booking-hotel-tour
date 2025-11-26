@@ -31,6 +31,9 @@ import TourPage from "./pages/customer/Tour";
 import TourDetails from "./pages/customer/TourDetails";
 import TourBookingPage from "./pages/customer/TourBooking";
 import BookingManagementBusinessPage from "./pages/business/BookingManagement";
+import TourManagement from "./pages/admin/TourManagement";
+import BookingManagement from "./pages/admin/BookingManagement";
+import { BookingOfManagement } from "./pages/admin/BookingOfManagement";
 
 function App() {
   return (
@@ -98,6 +101,9 @@ function App() {
           <Route path="users" element={<UserList />} />
           <Route path="users/:id/edit" element={<EditUserPage />} />
           <Route path="hotels" element={<HotelManagement />} />
+          <Route path="tours" element={<TourManagement />} />
+          <Route path="bookings" element={<BookingManagement />} />
+          <Route path="bookings/owner" element={<BookingOfManagement />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
 
