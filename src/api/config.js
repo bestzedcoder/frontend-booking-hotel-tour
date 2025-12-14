@@ -27,26 +27,25 @@ axiosClient.interceptors.response.use(
     // Nếu token hết hạn
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-
-      const refreshToken = localStorage.getItem("refreshToken");
       const userId = JSON.parse(localStorage.getItem("user"))?.id;
-      if (refreshToken) {
-        try {
-          const res = await axios.post(
-            "http://localhost:8080/api/auth/refresh",
-            { userId, refreshToken }
-          );
+      try {
+        const res = await axios.post(
+          "http://localhost:8080/api/auth/refresh",
+          { userId },
+          {
+            withCredentials: true,
+          }
+        );
 
-          const newAccessToken = res.data.data.access_token;
-          localStorage.setItem("accessToken", newAccessToken);
+        const newAccessToken = res.data.data.access_token;
+        localStorage.setItem("accessToken", newAccessToken);
 
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-          return axiosClient(originalRequest);
-        } catch (refreshError) {
-          console.error("Refresh token failed:", refreshError);
-          localStorage.clear();
-          window.location.href = "/login";
-        }
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return axiosClient(originalRequest);
+      } catch (refreshError) {
+        console.error("Refresh token failed:", refreshError);
+        localStorage.clear();
+        window.location.href = "/login";
       }
     }
 

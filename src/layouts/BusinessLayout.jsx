@@ -9,7 +9,7 @@ export const BusinessLayout = ({ children }) => {
       <div className="flex-1 md:ml-64 flex flex-col">
         <BusinessNavbar />
         <main className="flex-1 p-6 md:p-8 mt-16 overflow-y-auto">
-          {children || <Outlet />}{" "}
+          {children || <Outlet />}
         </main>
       </div>
     </div>

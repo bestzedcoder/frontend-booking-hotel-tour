@@ -2,7 +2,6 @@ import { Outlet } from "react-router-dom";
 import { AdminSidebar } from "../pages/admin/AdminSidebar";
 import { AdminNavbar } from "../pages/admin/AdminNavbar";
 
-// Component chính: AdminLayout
 export const AdminLayout = ({ children }) => {
   return (
     <div className="flex min-h-screen bg-gray-100">
@@ -11,7 +10,6 @@ export const AdminLayout = ({ children }) => {
 
       {/* Main content area */}
       <div className="flex-1 md:ml-64 flex flex-col">
-        {/* Navbar - Đã được chỉnh sửa để sử dụng logic auth và dropdown hoàn chỉnh */}
         <AdminNavbar />
 
         {/* Nội dung chính của trang */}

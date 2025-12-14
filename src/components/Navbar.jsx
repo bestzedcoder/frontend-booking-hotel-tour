@@ -75,17 +75,6 @@ const Navbar = () => {
           </>
         )}
 
-        <Link
-          to="/contact"
-          className={`flex items-center gap-1 ${
-            isActive("/contact")
-              ? "text-indigo-600 border-b-2 border-indigo-600"
-              : "hover:text-indigo-600"
-          } transition pb-1`}
-        >
-          <FaPhone /> Liên hệ
-        </Link>
-
         {user ? (
           <div className="flex items-center gap-4">
             <Link
@@ -194,16 +183,6 @@ const Navbar = () => {
               </Link>
             </>
           )}
-
-          <Link
-            to="/contact"
-            onClick={() => setOpen(false)}
-            className={`flex items-center gap-2 ${
-              isActive("/contact") ? "text-indigo-600 font-semibold" : ""
-            }`}
-          >
-            <FaPhone /> Liên hệ
-          </Link>
 
           {user ? (
             <>

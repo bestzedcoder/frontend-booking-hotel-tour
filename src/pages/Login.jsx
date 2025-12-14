@@ -13,11 +13,9 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    const check = await login(username, password);
+    await login(username, password);
     console.log("Login:", { username, password });
     setIsLoading(false);
-    if (!check) return;
-    navigate("/");
   };
 
   const handleLoginGoogle = async (e) => {

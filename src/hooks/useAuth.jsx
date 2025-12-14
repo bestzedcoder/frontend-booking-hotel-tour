@@ -11,37 +11,43 @@ export const AuthProvider = ({ children }) => {
   const { callApi } = useApi();
 
   const login = async (username, password) => {
-    const res = await callApi("post", "/auth/login", {
-      username,
-      password,
-    });
+    const res = await callApi(
+      "post",
+      "/auth/login",
+      {
+        username,
+        password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
 
     if (!res.success) {
       alert("❌ " + res.message);
-      return false;
+      return;
     }
 
-    const { access_token, refresh_token } = res.data;
+    const { access_token } = res.data;
 
     // Lưu token vào localStorage
     localStorage.setItem("accessToken", access_token);
-    localStorage.setItem("refreshToken", refresh_token);
 
     // Gọi lấy thông tin user
     const profileRes = await callApi("get", "/auth/profile");
     setUser(profileRes.data);
     alert("✅ Đăng nhập thành công!");
-    return true;
   };
 
   const logout = async () => {
-    const res = await callApi("get", "/auth/logout");
+    const res = await callApi("get", "/auth/logout", {
+      withCredentials: true,
+    });
     if (!res.success) {
       alert(res.message);
       return;
     }
     localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
     setUser(null);
     alert(res.message);
     navigate("/login", { replace: true });

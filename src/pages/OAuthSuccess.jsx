@@ -14,12 +14,9 @@ function OAuthSuccess() {
       try {
         const params = new URLSearchParams(search);
         const accessToken = params.get("accessToken");
-        const refreshToken = params.get("refreshToken");
 
         if (accessToken) {
           localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("refreshToken", refreshToken);
-
           const profileRes = await callApi("get", "/auth/profile");
           setUser(profileRes.data);
           navigate("/");

@@ -1,11 +1,6 @@
 import { Navigate } from "react-router-dom";
 import { Plane } from "lucide-react";
-
-// Giả định hook useAuth được import từ nơi khác (đã có trong prompt gốc)
-// import { useAuth } from "../hooks/useAuth";
-const useAuth = () => ({ user: null }); // Mocking useAuth for a self-contained file
-
-// --- Components Con Của Layout ---
+import { useAuth } from "../hooks/useAuth";
 
 const PublicHeader = () => (
   <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-100">
@@ -42,13 +37,9 @@ const PublicFooter = () => (
   </footer>
 );
 
-// --- Component Chính PublicLayout ---
-
 export function PublicLayout({ children }) {
-  // GIẢ ĐỊNH: useAuth() là hook lấy trạng thái người dùng
   const { user } = useAuth();
 
-  // Chuyển hướng nếu người dùng đã đăng nhập (logic gốc)
   if (user) {
     return <Navigate to="/" replace />;
   }
@@ -60,10 +51,7 @@ export function PublicLayout({ children }) {
 
       {/* 2. Main Content (Nơi chứa Login/Register Forms) */}
       <main className="flex-grow pt-24 pb-12 w-full">
-        {/* Nền nhẹ nhàng với gradient */}
         <div className="absolute inset-0 z-0 opacity-20 bg-gradient-to-br from-indigo-50 to-blue-50"></div>
-
-        {/* Container cho Form: Căn giữa, giới hạn chiều rộng */}
         <div className="relative z-10 max-w-lg mx-auto px-4">{children}</div>
       </main>
 
@@ -72,6 +60,3 @@ export function PublicLayout({ children }) {
     </div>
   );
 }
-
-// Export default để tiện sử dụng
-export default PublicLayout;
