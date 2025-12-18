@@ -114,7 +114,8 @@ const TourBookingPage = () => {
         totalPrice.total
       )}\nPhương thức: ${paymentMethod}`
     );
-    navigate("/bookings");
+    const code = response.data;
+    navigate(`/processing/${code}/tour`);
   }, [tour, people, paymentMethod, totalPrice.total, formatCurrency]);
 
   const handlePeopleChange = (change) => {

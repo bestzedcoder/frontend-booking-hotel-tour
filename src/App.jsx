@@ -34,6 +34,7 @@ import BookingManagementBusinessPage from "./pages/business/BookingManagement";
 import TourManagement from "./pages/admin/TourManagement";
 import BookingManagement from "./pages/admin/BookingManagement";
 import { BookingOfManagement } from "./pages/admin/BookingOfManagement";
+import { BookingProcessingPage } from "./pages/customer/BookingProcessingPage";
 
 function App() {
   return (
@@ -84,6 +85,10 @@ function App() {
           <Route path="tours" element={<TourPage />} />
           <Route path="tours/:id/details" element={<TourDetails />} />
           <Route path="tours/:id/booking" element={<TourBookingPage />} />
+          <Route
+            path="processing/:code/:type"
+            element={<BookingProcessingPage />}
+          />
           <Route path="bookings" element={<BookingManagementPage />} />
           <Route path="payment/result" element={<PaymentResultPage />} />
           <Route path="*" element={<NotFoundPage />} />

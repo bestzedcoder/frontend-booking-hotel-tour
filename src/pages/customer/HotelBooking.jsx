@@ -167,7 +167,6 @@ export const HotelBookingPage = () => {
 
     console.log("SEND BOOKING:", payload);
 
-    // **************** MÔ PHỎNG GỌI API THỰC TẾ ****************
     const response = await callApi(
       "post",
       `bookings/hotel/${hotelId}/room/${roomId}`,
@@ -181,8 +180,8 @@ export const HotelBookingPage = () => {
     }
     alert(response.message);
     setIsSubmitting(false);
-    navigate("/bookings");
-    // *************************************************************
+    const code = response.data;
+    navigate(`/processing/${code}/hotel`);
   };
 
   // --------------------------
