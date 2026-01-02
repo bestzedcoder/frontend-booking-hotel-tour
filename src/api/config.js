@@ -6,10 +6,10 @@ const axiosClient = axios.create({
   baseURL: BACKEND_URL,
   headers: {
     "Content-Type": "application/json",
+    "ngrok-skip-browser-warning": "true",
   },
 });
 
-// Lấy token từ localStorage
 axiosClient.interceptors.request.use((config) => {
   const token = localStorage.getItem("accessToken");
   if (token) {
@@ -18,13 +18,11 @@ axiosClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Xử lý refresh token khi accessToken hết hạn
 axiosClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
     console.log({ error });
-    // Nếu token hết hạn
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       const userId = JSON.parse(localStorage.getItem("user"))?.id;
