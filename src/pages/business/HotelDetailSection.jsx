@@ -5,14 +5,13 @@ import TruncatedDescription from "./TruncatedDescription";
 const HotelDetailSection = ({ hotelData }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  // Hiệu ứng trượt ảnh tự động
   useEffect(() => {
     if (hotelData.hotelImages.length > 1) {
       const timer = setInterval(() => {
         setCurrentImageIndex(
           (prevIndex) => (prevIndex + 1) % hotelData.hotelImages.length
         );
-      }, 5000); // Tự động chuyển sau 5 giây
+      }, 5000);
       return () => clearInterval(timer);
     }
   }, [hotelData.hotelImages.length]);
@@ -38,7 +37,6 @@ const HotelDetailSection = ({ hotelData }) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {/* Cột 1: Slider Ảnh */}
       <div className="md:col-span-2 relative overflow-hidden rounded-lg shadow-xl aspect-video">
         <div
           className="flex transition-transform duration-500 ease-in-out h-full"
@@ -53,7 +51,6 @@ const HotelDetailSection = ({ hotelData }) => {
             />
           ))}
         </div>
-        {/* Indicators */}
         <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
           {hotelData.hotelImages.map((_, index) => (
             <button
@@ -67,7 +64,6 @@ const HotelDetailSection = ({ hotelData }) => {
         </div>
       </div>
 
-      {/* Cột 2: Thông tin Chi tiết */}
       <div className="md:col-span-1 p-4 bg-white border rounded-lg shadow-lg">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">
           {hotelData.hotelName}

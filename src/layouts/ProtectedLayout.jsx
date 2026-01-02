@@ -4,6 +4,9 @@ import { useAuth } from "../hooks/useAuth";
 export const ProtectedRoute = ({ children, allowedRole }) => {
   const { user } = useAuth();
   const location = useLocation();
+  if (location.pathname.includes("client/dashboard")) {
+    return children;
+  }
   if (!user) {
     return <Navigate to="/login" replace />;
   }

@@ -1,5 +1,3 @@
-import React from "react";
-// Đảm bảo import RoomType và RoomStatus từ file utils/contain của bạn
 import { RoomType, RoomStatus } from "../../utils/contain";
 
 const RoomFilter = ({ filterType, filterStatus, onFilterChange }) => {
@@ -8,7 +6,6 @@ const RoomFilter = ({ filterType, filterStatus, onFilterChange }) => {
 
   return (
     <div className="mb-6 p-4 bg-gray-50 rounded-lg shadow-inner flex flex-wrap gap-4">
-      {/* Lọc theo Loại phòng */}
       <div className="flex items-center space-x-2">
         <label className="text-sm font-medium text-gray-700">Loại Phòng:</label>
         <select
@@ -24,7 +21,6 @@ const RoomFilter = ({ filterType, filterStatus, onFilterChange }) => {
         </select>
       </div>
 
-      {/* Lọc theo Trạng thái */}
       <div className="flex items-center space-x-2">
         <label className="text-sm font-medium text-gray-700">Trạng thái:</label>
         <select

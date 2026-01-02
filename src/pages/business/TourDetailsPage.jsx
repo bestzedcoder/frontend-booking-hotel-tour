@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useApi } from "../../hooks/useApi"; // Giả định hook useApi đã có
+import { useApi } from "../../hooks/useApi";
 import {
   PencilIcon,
   CheckIcon,
@@ -12,67 +12,52 @@ import {
   UsersIcon,
   ClockIcon,
   CalendarDaysIcon,
-  ArrowPathIcon, // Import icon cho loading
+  ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import { VIETNAM_PROVINCES } from "../../utils/contain";
 
-// =================================================================
-// Giả định các hàm/hằng số được import từ file khác
-// =================================================================
 const formatCurrencyVND = (amount) => {
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
   }).format(amount);
 };
-// =================================================================
 
-// Icon Spinner (đặt bên ngoài component chính)
 const SpinnerIcon = (props) => <ArrowPathIcon {...props} />;
 
-// Kiểu dữ liệu giả định
 const initialTourData = {
   tourId: null,
   tourName: "",
   tourDescription: "",
   tourCity: "",
   tourPrice: 0,
-  startDate: "", // ISO Date String
-  endDate: "", // ISO Date String
+  startDate: "",
+  endDate: "",
   duration: 0,
   maxPeople: 0,
-  imageTourUrls: [], // Danh sách URL ảnh cũ
+  imageTourUrls: [],
   tourSchedules: [],
 };
 
-// =================================================================
-// 1. COMPONENT CHÍNH
-// =================================================================
 export const TourDetailsPage = () => {
   const { id } = useParams();
   const tourId = id;
   const { callApi } = useApi();
   const navigate = useNavigate();
 
-  // --- STATES CHÍNH ---
   const [tourData, setTourData] = useState(initialTourData);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // --- STATES CHỈNH SỬA THÔNG TIN CHUNG ---
   const [isEditingInfo, setIsEditingInfo] = useState(false);
   const [editFormData, setEditFormData] = useState({});
   const [imageNewFiles, setImageNewFiles] = useState([]);
-  const [isUpdatingInfo, setIsUpdatingInfo] = useState(false); // <--- ĐÃ THÊM
+  const [isUpdatingInfo, setIsUpdatingInfo] = useState(false);
 
-  // --- STATES CHỈNH SỬA LỊCH TRÌNH ---
   const [isEditingSchedule, setIsEditingSchedule] = useState({});
   const [editScheduleData, setEditScheduleData] = useState({});
-  const [isUpdatingSchedule, setIsUpdatingSchedule] = useState({}); // <--- ĐÃ THÊM
+  const [isUpdatingSchedule, setIsUpdatingSchedule] = useState({});
 
-  // =================================================================
-  // 2. LOGIC FETCH DỮ LIỆU TOUR
-  // =================================================================
   const fetchTourDetails = useCallback(async () => {
     if (!tourId) return;
     setIsLoading(true);
@@ -113,10 +98,6 @@ export const TourDetailsPage = () => {
         Không có dữ liệu tour.
       </div>
     );
-
-  // =================================================================
-  // 3. LOGIC CHỈNH SỬA THÔNG TIN CHUNG
-  // =================================================================
 
   const handleStartEditInfo = () => {
     setIsEditingInfo(true);
@@ -160,7 +141,6 @@ export const TourDetailsPage = () => {
     );
   };
 
-  // Logic CẬP NHẬT THÔNG TIN TOUR VÀ ẢNH
   const handleConfirmEditInfo = async () => {
     const totalImages =
       editFormData.imageTourUrls.length + imageNewFiles.length;
@@ -180,7 +160,7 @@ export const TourDetailsPage = () => {
       return;
     }
 
-    setIsUpdatingInfo(true); // <--- BẮT ĐẦU LOADING
+    setIsUpdatingInfo(true);
 
     const data = new FormData();
     const updateRequest = {
@@ -215,13 +195,9 @@ export const TourDetailsPage = () => {
     } catch (err) {
       alert("Lỗi kết nối server khi cập nhật.");
     } finally {
-      setIsUpdatingInfo(false); // <--- KẾT THÚC LOADING
+      setIsUpdatingInfo(false);
     }
   };
-
-  // =================================================================
-  // 4. LOGIC CHỈNH SỬA LỊCH TRÌNH
-  // =================================================================
 
   const handleStartEditSchedule = (schedule) => {
     setIsEditingSchedule((prev) => ({
@@ -260,7 +236,7 @@ export const TourDetailsPage = () => {
       return;
     }
 
-    setIsUpdatingSchedule((prev) => ({ ...prev, [scheduleId]: true })); // <--- BẮT ĐẦU LOADING
+    setIsUpdatingSchedule((prev) => ({ ...prev, [scheduleId]: true }));
 
     try {
       const updateRequest = {
@@ -289,13 +265,10 @@ export const TourDetailsPage = () => {
     } catch (err) {
       alert("Lỗi kết nối server khi cập nhật lịch trình.");
     } finally {
-      setIsUpdatingSchedule((prev) => ({ ...prev, [scheduleId]: false })); // <--- KẾT THÚC LOADING
+      setIsUpdatingSchedule((prev) => ({ ...prev, [scheduleId]: false }));
     }
   };
 
-  // =================================================================
-  // 5. HIỂN THỊ GIAO DIỆN
-  // =================================================================
   const displayData = isEditingInfo ? editFormData : tourData;
 
   return (
@@ -310,9 +283,6 @@ export const TourDetailsPage = () => {
         &larr; Quay lại
       </button>
 
-      {/* ------------------------------------------------------------- */}
-      {/* PHẦN 1: THÔNG TIN CHUNG VÀ ẢNH (INFO & IMAGE) */}
-      {/* ------------------------------------------------------------- */}
       <section className="bg-white p-6 rounded-xl shadow-lg mb-8">
         <div className="flex justify-between items-center border-b pb-3 mb-5">
           <h2 className="text-2xl font-semibold text-indigo-700">
@@ -330,7 +300,7 @@ export const TourDetailsPage = () => {
             <div className="flex space-x-2">
               <button
                 onClick={handleConfirmEditInfo}
-                disabled={isUpdatingInfo} // <--- VÔ HIỆU HÓA
+                disabled={isUpdatingInfo}
                 className={`flex items-center space-x-1 px-4 py-2 rounded-lg transition 
                         ${
                           isUpdatingInfo
@@ -338,7 +308,7 @@ export const TourDetailsPage = () => {
                             : "bg-green-500 text-white hover:bg-green-600"
                         }`}
               >
-                {isUpdatingInfo ? ( // <--- HIỂN THỊ SPINNER
+                {isUpdatingInfo ? (
                   <SpinnerIcon className="w-5 h-5 animate-spin" />
                 ) : (
                   <CheckIcon className="w-5 h-5" />
@@ -347,7 +317,7 @@ export const TourDetailsPage = () => {
               </button>
               <button
                 onClick={handleCancelEditInfo}
-                disabled={isUpdatingInfo} // <--- VÔ HIỆU HÓA
+                disabled={isUpdatingInfo}
                 className={`flex items-center space-x-1 px-4 py-2 rounded-lg transition 
                         ${
                           isUpdatingInfo
@@ -362,10 +332,7 @@ export const TourDetailsPage = () => {
           )}
         </div>
 
-        {/* Form Thông tin chi tiết */}
-        {/* ... (Giữ nguyên các InputField) ... */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Tên Tour */}
           <InputField
             label="Tên Tour"
             name="tourName"
@@ -374,7 +341,6 @@ export const TourDetailsPage = () => {
             onChange={handleInfoChange}
           />
 
-          {/* Thành phố */}
           <div>
             <label className="block text-sm font-medium text-gray-700 flex items-center mb-1">
               <MapPinIcon className="w-4 h-4 mr-1 text-indigo-500" />
@@ -402,7 +368,6 @@ export const TourDetailsPage = () => {
             )}
           </div>
 
-          {/* Giá Tour */}
           <InputField
             label="Giá Tour (VNĐ)"
             name="tourPrice"
@@ -418,7 +383,6 @@ export const TourDetailsPage = () => {
             }
           />
 
-          {/* Số lượng người tối đa */}
           <InputField
             label="Số người tối đa"
             name="maxPeople"
@@ -429,7 +393,6 @@ export const TourDetailsPage = () => {
             icon={<UsersIcon className="w-4 h-4 mr-1 text-indigo-500" />}
           />
 
-          {/* Thời gian */}
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 flex items-center mb-1">
               <ClockIcon className="w-4 h-4 mr-1 text-indigo-500" />
@@ -442,7 +405,6 @@ export const TourDetailsPage = () => {
           </div>
         </div>
 
-        {/* Mô tả Tour */}
         <div className="mt-6">
           <label className="block text-sm font-medium text-gray-700">
             Mô tả Tour
@@ -459,8 +421,6 @@ export const TourDetailsPage = () => {
           />
         </div>
 
-        {/* Quản lý Hình ảnh */}
-        {/* ... (Giữ nguyên phần quản lý ảnh) ... */}
         <div className="mt-8 border-t pt-6">
           <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center">
             <PhotoIcon className="w-5 h-5 mr-2" />
@@ -469,7 +429,6 @@ export const TourDetailsPage = () => {
           </h3>
 
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
-            {/* Ảnh Cũ (Hiển thị/Xóa khi Edit) */}
             {displayData.imageTourUrls?.map((url, index) => (
               <div key={url} className="relative group aspect-w-16 aspect-h-9">
                 <img
@@ -489,7 +448,6 @@ export const TourDetailsPage = () => {
               </div>
             ))}
 
-            {/* Ảnh Mới (Xem trước/Xóa khi Edit) */}
             {imageNewFiles.map((file, index) => (
               <div
                 key={index}
@@ -515,7 +473,6 @@ export const TourDetailsPage = () => {
               </div>
             ))}
 
-            {/* Nút Thêm Ảnh Mới (Khi Edit) */}
             {isEditingInfo && (
               <label
                 htmlFor="new-image-upload"
@@ -543,9 +500,6 @@ export const TourDetailsPage = () => {
         </div>
       </section>
 
-      {/* ------------------------------------------------------------- */}
-      {/* PHẦN 2: LỊCH TRÌNH CHI TIẾT (SCHEDULES) */}
-      {/* ------------------------------------------------------------- */}
       <section className="bg-white p-6 rounded-xl shadow-lg">
         <h2 className="text-2xl font-semibold text-indigo-700 mb-5 border-b pb-3">
           Lịch Trình ({tourData.duration} Ngày)
@@ -555,7 +509,7 @@ export const TourDetailsPage = () => {
           {tourData.tourSchedules.map((schedule, index) => {
             const isEditing = isEditingSchedule[schedule.tourScheduleId];
             const isScheduleUpdating =
-              isUpdatingSchedule[schedule.tourScheduleId]; // <--- LẤY TRẠNG THÁI LOADING
+              isUpdatingSchedule[schedule.tourScheduleId];
             const currentEditData =
               editScheduleData[schedule.tourScheduleId] || schedule;
 
@@ -584,7 +538,7 @@ export const TourDetailsPage = () => {
                         onClick={() =>
                           handleConfirmEditSchedule(schedule.tourScheduleId)
                         }
-                        disabled={isScheduleUpdating} // <--- VÔ HIỆU HÓA
+                        disabled={isScheduleUpdating}
                         className={`flex items-center space-x-1 px-3 py-1 text-sm rounded transition
                             ${
                               isScheduleUpdating
@@ -592,7 +546,7 @@ export const TourDetailsPage = () => {
                                 : "bg-green-500 text-white hover:bg-green-600"
                             }`}
                       >
-                        {isScheduleUpdating ? ( // <--- HIỂN THỊ SPINNER
+                        {isScheduleUpdating ? (
                           <SpinnerIcon className="w-4 h-4 animate-spin" />
                         ) : (
                           <CheckIcon className="w-4 h-4" />
@@ -605,7 +559,7 @@ export const TourDetailsPage = () => {
                         onClick={() =>
                           handleCancelEditSchedule(schedule.tourScheduleId)
                         }
-                        disabled={isScheduleUpdating} // <--- VÔ HIỆU HÓA
+                        disabled={isScheduleUpdating}
                         className={`flex items-center space-x-1 px-3 py-1 text-sm rounded transition
                             ${
                               isScheduleUpdating
@@ -620,7 +574,6 @@ export const TourDetailsPage = () => {
                   )}
                 </div>
 
-                {/* Tiêu đề */}
                 <div className="mb-3">
                   <label className="block text-sm font-medium text-gray-700">
                     Tiêu đề
@@ -642,7 +595,6 @@ export const TourDetailsPage = () => {
                   />
                 </div>
 
-                {/* Mô tả */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
                     Mô tả
@@ -672,9 +624,6 @@ export const TourDetailsPage = () => {
   );
 };
 
-// =================================================================
-// COMPONENT PHỤ TRỢ
-// =================================================================
 const InputField = ({
   label,
   name,

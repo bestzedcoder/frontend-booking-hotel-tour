@@ -9,15 +9,14 @@ import {
   CalendarIcon,
   MinusCircleIcon,
   PlusIcon,
-  PhotoIcon, // Thêm PhotoIcon cho phần hình ảnh
+  PhotoIcon,
   XCircleIcon,
-  ArrowLeftIcon, // Thêm XCircleIcon để xóa ảnh
+  ArrowLeftIcon,
 } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 import { VIETNAM_PROVINCES } from "../../utils/contain";
 import { useApi } from "../../hooks/useApi";
 
-// Định dạng tiền tệ VNĐ (Giữ nguyên)
 const formatCurrencyVND = (amount) => {
   const number = Number(amount);
   if (isNaN(number)) return "0";
@@ -28,7 +27,6 @@ const formatCurrencyVND = (amount) => {
   }).format(number);
 };
 
-// Hàm định dạng ngày hôm nay (Giữ nguyên)
 const getTodayDate = () => {
   const today = new Date();
   const yyyy = today.getFullYear();
@@ -37,7 +35,6 @@ const getTodayDate = () => {
   return `${yyyy}-${mm}-${dd}`;
 };
 
-// Component chính
 export const TourCreatingPage = () => {
   const { callApi } = useApi();
   const [formData, setFormData] = useState({
@@ -49,7 +46,7 @@ export const TourCreatingPage = () => {
     endDate: "",
     duration: 1,
     maxPeople: 1,
-    tourImages: [], // Thêm mảng để lưu trữ các File ảnh
+    tourImages: [],
   });
 
   const [tourSchedule, setTourSchedule] = useState([
@@ -60,7 +57,6 @@ export const TourCreatingPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // 1. Logic tự động cập nhật TourSchedule theo Duration (Giữ nguyên)
   useEffect(() => {
     const currentDuration = formData.duration || 1;
     const newSchedule = [];
@@ -73,7 +69,6 @@ export const TourCreatingPage = () => {
     setTourSchedule(newSchedule);
   }, [formData.duration]);
 
-  // 2. Logic tự động tính EndDate (Giữ nguyên)
   useEffect(() => {
     const { startDate, duration } = formData;
     const days = parseInt(duration) || 1;
@@ -95,13 +90,10 @@ export const TourCreatingPage = () => {
     }
   }, [formData.startDate, formData.duration]);
 
-  // Hàm xử lý quay lại
   const handleGoBack = () => {
-    // Sử dụng navigate(-1) để quay lại trang trước đó trong lịch sử trình duyệt
     navigate(-1);
   };
 
-  // Xử lý thay đổi cho các trường thông thường (Giữ nguyên)
   const handleChange = (e) => {
     const { name, value } = e.target;
     let newValue = value;
@@ -114,7 +106,6 @@ export const TourCreatingPage = () => {
     setFormData((prev) => ({ ...prev, [name]: newValue }));
   };
 
-  // 3. Logic xử lý thay đổi cho Giá Tour (Giữ nguyên)
   const handlePriceChange = (increment) => {
     setFormData((prev) => {
       const newPrice = (prev.tourPrice || 0) + increment;
@@ -128,14 +119,12 @@ export const TourCreatingPage = () => {
     setFormData((prev) => ({ ...prev, tourPrice: Math.max(0, numericValue) }));
   };
 
-  // Xử lý thay đổi cho Lịch trình (Giữ nguyên)
   const handleScheduleChange = (index, name, value) => {
     const updatedSchedule = [...tourSchedule];
     updatedSchedule[index][name] = value;
     setTourSchedule(updatedSchedule);
   };
 
-  // 4. Xử lý tải lên nhiều hình ảnh
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     setFormData((prev) => ({
@@ -144,7 +133,6 @@ export const TourCreatingPage = () => {
     }));
   };
 
-  // 5. Xóa một hình ảnh đã chọn
   const handleRemoveImage = (indexToRemove) => {
     setFormData((prev) => ({
       ...prev,
@@ -152,7 +140,6 @@ export const TourCreatingPage = () => {
     }));
   };
 
-  // Xử lý Submit (Đã cập nhật: bao gồm tourImages)
   const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = {};
@@ -172,7 +159,6 @@ export const TourCreatingPage = () => {
     if (formData.tourImages.length === 0)
       newErrors.tourImages = "Vui lòng tải lên ít nhất một hình ảnh cho tour.";
 
-    // Validation cho lịch trình
     const scheduleErrors = tourSchedule.some(
       (s) => !s.title.trim() || !s.description.trim()
     );
@@ -184,7 +170,7 @@ export const TourCreatingPage = () => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      setIsLoading(true); // <--- BẮT ĐẦU LOADING
+      setIsLoading(true);
 
       const finalData = {
         tourName: formData.tourName,
@@ -197,13 +183,10 @@ export const TourCreatingPage = () => {
         tourPrice: formData.tourPrice,
         tourSchedule,
       };
-      console.log("Dữ liệu gửi đi:", finalData);
 
-      // Sử dụng try...catch để xử lý lỗi và finally để tắt loading
       try {
         const data = new FormData();
 
-        // Chuyển object finalData thành JSON string và gắn vào field "data"
         data.append(
           "data",
           new Blob(
@@ -216,7 +199,6 @@ export const TourCreatingPage = () => {
           )
         );
 
-        // Thêm tất cả ảnh
         formData.tourImages.forEach((file) => {
           data.append("images", file);
         });
@@ -225,30 +207,24 @@ export const TourCreatingPage = () => {
           headers: { "Content-Type": "multipart/form-data" },
         });
 
-        // 2. XỬ LÝ THÀNH CÔNG
         if (response.success) {
-          // Giả định API trả về { success: true }
           alert("Tạo Tour thành công!");
-          navigate(-1); // <--- CHUYỂN HƯỚNG VỀ TRANG TRƯỚC
+          navigate(-1);
         } else {
-          // Xử lý lỗi từ server (nếu có)
           alert(`Lỗi tạo tour: ${response.message || "Lỗi không xác định"}`);
           console.error("API Error:", response.message);
         }
       } catch (error) {
-        // 3. XỬ LÝ LỖI MẠNG/SERVER
         alert("Đã xảy ra lỗi khi kết nối hoặc xử lý dữ liệu.");
         console.error("Submission Error:", error);
       } finally {
-        // 4. KẾT THÚC LOADING
-        setIsLoading(false); // <--- KẾT THÚC LOADING
+        setIsLoading(false);
       }
     }
   };
 
   return (
     <div className="p-8 bg-gray-50 min-h-screen">
-      {/* Header */}
       <header className="border-b border-gray-200 pb-4 mb-6 relative">
         <button
           onClick={handleGoBack}
@@ -268,19 +244,17 @@ export const TourCreatingPage = () => {
         </p>
       </header>
 
-      {/* NÚT SUBMIT ĐƯỢC ĐƯA LÊN ĐẦU */}
       <div className="flex justify-end mb-8 sticky top-0 z-10 bg-gray-50/90 py-2 -mx-8 px-8 border-b border-gray-200">
         <button
           type="submit"
           onClick={handleSubmit}
-          disabled={isLoading} // <--- VÔ HIỆU HÓA KHI ĐANG TẢI
+          disabled={isLoading}
           className={`flex items-center space-x-2 px-8 py-3 font-bold rounded-xl shadow-lg shadow-indigo-200 transition duration-150 text-lg transform focus:outline-none focus:ring-4 focus:ring-indigo-500 focus:ring-offset-2 ${
             isLoading
-              ? "bg-indigo-400 cursor-not-allowed" // Màu khi Loading
-              : "bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-[1.02]" // Màu bình thường
+              ? "bg-indigo-400 cursor-not-allowed"
+              : "bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-[1.02]"
           }`}
         >
-          {/* Hiển thị Icon Loading nếu đang tải */}
           {isLoading ? (
             <svg
               className="animate-spin h-5 w-5 text-white"
@@ -317,7 +291,6 @@ export const TourCreatingPage = () => {
             1. Thông tin chung
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Tên Tour */}
             <div>
               <label
                 htmlFor="tourName"
@@ -340,7 +313,6 @@ export const TourCreatingPage = () => {
               )}
             </div>
 
-            {/* Thành phố */}
             <div>
               <label
                 htmlFor="tourCity"
@@ -364,7 +336,6 @@ export const TourCreatingPage = () => {
                     </option>
                   ))}
                 </select>
-                {/* Icon mũi tên cho dropdown */}
                 <svg
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none"
                   xmlns="http://www.w3.org/2000/svg"
@@ -383,8 +354,6 @@ export const TourCreatingPage = () => {
               )}
             </div>
 
-            {/* GIÁ TOUR (Input Number với Step 100,000) */}
-            {/* GIÁ TOUR (Input Number với Step 100,000) */}
             <div>
               <label
                 htmlFor="tourPrice"
@@ -402,23 +371,19 @@ export const TourCreatingPage = () => {
                 </button>
 
                 <div className="relative flex-grow">
-                  {/* Icon ví tiền ở bên trái */}
                   <WalletIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <input
                     type="text"
                     name="tourPrice"
                     id="tourPrice"
-                    // HIỂN THỊ GIÁ TRỊ ĐÃ ĐỊNH DẠNG (ví dụ: "100.000")
                     value={formatCurrencyVND(formData.tourPrice)
                       .replace("₫", "")
                       .trim()}
                     onChange={handlePriceInput}
-                    // Thêm padding bên phải (pr-12) để chừa chỗ cho nhãn VNĐ
                     className="block w-full rounded-none border-gray-300 p-2.5 pl-10 pr-12 text-right focus:border-indigo-500 focus:ring-indigo-500"
                     placeholder="100,000"
                     required
                   />
-                  {/* Nhãn VNĐ luôn hiển thị bên phải input */}
                   <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm font-medium">
                     VNĐ
                   </span>
@@ -437,7 +402,6 @@ export const TourCreatingPage = () => {
               )}
             </div>
 
-            {/* Số lượng người tối đa */}
             <div>
               <label
                 htmlFor="maxPeople"
@@ -465,7 +429,6 @@ export const TourCreatingPage = () => {
             </div>
           </div>
 
-          {/* Mô tả Tour */}
           <div className="mt-6">
             <label
               htmlFor="tourDescription"
@@ -490,7 +453,6 @@ export const TourCreatingPage = () => {
             )}
           </div>
         </section>
-        {/* Phần 2: Ngày và Thời lượng (Giữ nguyên) */}
         <section className="p-6 bg-white rounded-xl shadow-lg border border-gray-100">
           <h2 className="text-xl font-bold text-indigo-700 mb-5 flex items-center">
             <CalendarDaysIcon className="w-5 h-5 mr-2" />
@@ -498,7 +460,6 @@ export const TourCreatingPage = () => {
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Thời lượng (Duration) */}
             <div>
               <label
                 htmlFor="duration"
@@ -528,7 +489,6 @@ export const TourCreatingPage = () => {
               )}
             </div>
 
-            {/* Ngày Bắt Đầu */}
             <div>
               <label
                 htmlFor="startDate"
@@ -551,7 +511,6 @@ export const TourCreatingPage = () => {
               </div>
             </div>
 
-            {/* Ngày Kết Thúc (Tự động tính) */}
             <div>
               <label
                 htmlFor="endDate"
@@ -577,7 +536,6 @@ export const TourCreatingPage = () => {
             </div>
           </div>
         </section>
-        {/* Phần 4: Hình ảnh Tour (Mới) */}
         <section className="p-6 bg-white rounded-xl shadow-lg border border-gray-100">
           <h2 className="text-xl font-bold text-indigo-700 mb-5 flex items-center">
             <PhotoIcon className="w-5 h-5 mr-2" />
@@ -630,7 +588,6 @@ export const TourCreatingPage = () => {
             <p className="mb-4 text-sm text-red-600">{errors.tourImages}</p>
           )}
 
-          {/* Xem trước hình ảnh đã chọn */}
           {formData.tourImages.length > 0 && (
             <div className="mt-6">
               <h3 className="text-md font-semibold text-gray-700 mb-3">
@@ -658,7 +615,6 @@ export const TourCreatingPage = () => {
             </div>
           )}
         </section>
-        {/* Phần 3: Lịch Trình Tour (Giữ nguyên) */}
         <section className="p-6 bg-white rounded-xl shadow-lg border border-gray-100">
           <h2 className="text-xl font-bold text-indigo-700 mb-5 flex items-center">
             <CalendarDaysIcon className="w-5 h-5 mr-2" />
@@ -690,7 +646,6 @@ export const TourCreatingPage = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Tiêu đề lịch trình */}
                   <div>
                     <label
                       htmlFor={`title-${index}`}
@@ -711,7 +666,6 @@ export const TourCreatingPage = () => {
                     />
                   </div>
 
-                  {/* Mô tả lịch trình */}
                   <div className="md:col-span-2">
                     <label
                       htmlFor={`description-${index}`}

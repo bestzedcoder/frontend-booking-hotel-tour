@@ -2,16 +2,10 @@ import React, { useState, useEffect, useCallback } from "react";
 import {
   Search,
   Filter,
-  Calendar,
   RefreshCcw,
-  MoreHorizontal,
-  CheckCircle,
-  XCircle,
-  Clock,
   Edit,
   CreditCard,
   Banknote,
-  Landmark,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
@@ -19,7 +13,6 @@ import {
 } from "lucide-react";
 import { useApi } from "../../hooks/useApi";
 
-// --- Constants & Enums ---
 const BOOKING_STATUS = {
   PENDING: {
     label: "Chờ xử lý",
@@ -48,11 +41,6 @@ const BOOKING_TYPES = {
   HOTEL: "Khách sạn",
 };
 
-// --- Helper Functions ---
-
-/**
- * Định dạng số tiền sang VND
- */
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat("vi-VN", {
     style: "currency",
@@ -60,24 +48,19 @@ const formatCurrency = (amount) => {
   }).format(amount);
 };
 
-/**
- * Định dạng chuỗi ISO date sang định dạng DD/MM/YYYY HH:mm
- * @param {string} isoString - Chuỗi ngày giờ ISO 8601
- */
 const formatDateTime = (isoString) => {
   if (!isoString) return "N/A";
   try {
     const date = new Date(isoString);
     if (isNaN(date)) return "Invalid Date";
 
-    // Tùy chọn format cho locale Việt Nam
     return new Intl.DateTimeFormat("vi-VN", {
       year: "numeric",
       month: "numeric",
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-      hour12: false, // 24-hour format
+      hour12: false,
     }).format(date);
   } catch (error) {
     console.error("Error formatting date:", error);
@@ -86,12 +69,10 @@ const formatDateTime = (isoString) => {
 };
 
 const BookingManagementBusinessPage = () => {
-  // --- State Management ---
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
   const { callApi } = useApi();
 
-  // Pagination State
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 10,
@@ -99,7 +80,6 @@ const BookingManagementBusinessPage = () => {
     totalElements: 0,
   });
 
-  // 1. State cho UI Input (Người dùng đang nhập)
   const [filters, setFilters] = useState({
     code: "",
     customer: "",
@@ -109,7 +89,6 @@ const BookingManagementBusinessPage = () => {
     end_date: "",
   });
 
-  // 2. State cho API Request (Chỉ cập nhật khi nhấn Search hoặc Reset)
   const [appliedFilters, setAppliedFilters] = useState({
     code: "",
     customer: "",
@@ -119,23 +98,14 @@ const BookingManagementBusinessPage = () => {
     end_date: "",
   });
 
-  // Modal Update State
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newStatus, setNewStatus] = useState("");
 
-  // --- API Call with Error Handling ---
   const fetchBookings = useCallback(async () => {
     setLoading(true);
 
-    // Sử dụng try...finally để đảm bảo setLoading(false) luôn được gọi
     try {
-      console.log("Calling API with params:", {
-        page: pagination.page,
-        limit: pagination.limit,
-        ...appliedFilters,
-      });
-
       const params = new URLSearchParams({
         page: pagination.page,
         limit: pagination.limit,
@@ -180,12 +150,10 @@ const BookingManagementBusinessPage = () => {
     }
   }, [pagination.page, pagination.limit, appliedFilters, callApi]);
 
-  // --- Effects ---
   useEffect(() => {
     fetchBookings();
   }, [fetchBookings]);
 
-  // --- Handlers ---
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilters((prev) => ({ ...prev, [name]: value }));
@@ -194,7 +162,6 @@ const BookingManagementBusinessPage = () => {
   const handleSearch = (e) => {
     e.preventDefault();
 
-    // --- VALIDATION LOGIC ---
     if (filters.start_date && !filters.end_date) {
       alert("Vui lòng chọn ngày kết thúc (Đến ngày)!");
       return;
@@ -213,7 +180,6 @@ const BookingManagementBusinessPage = () => {
         return;
       }
     }
-    // ------------------------
 
     setPagination((prev) => ({ ...prev, page: 1 }));
     setAppliedFilters({ ...filters });
@@ -233,7 +199,6 @@ const BookingManagementBusinessPage = () => {
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
-  // Pagination Handlers
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
       setPagination((prev) => ({ ...prev, page: newPage }));
@@ -244,11 +209,10 @@ const BookingManagementBusinessPage = () => {
     setPagination((prev) => ({
       ...prev,
       limit: parseInt(e.target.value),
-      page: 1, // Reset về trang 1 khi đổi limit
+      page: 1,
     }));
   };
 
-  // Modal Handlers
   const openUpdateModal = (booking) => {
     setSelectedBooking(booking);
     setNewStatus(booking.status);
@@ -270,7 +234,6 @@ const BookingManagementBusinessPage = () => {
       }
     );
 
-    // Alert trước khi fetch lại dữ liệu
     alert(response.message);
 
     if (!response.success) return;
@@ -279,7 +242,6 @@ const BookingManagementBusinessPage = () => {
     fetchBookings();
   };
 
-  // --- Helper: Generate Page Numbers (Không thay đổi) ---
   const getPageNumbers = () => {
     const delta = 1;
     const range = [];
@@ -314,7 +276,6 @@ const BookingManagementBusinessPage = () => {
   return (
     <div className="p-6 bg-gray-50 min-h-screen font-sans text-slate-800">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-900">
@@ -335,13 +296,11 @@ const BookingManagementBusinessPage = () => {
           </div>
         </div>
 
-        {/* Filter Section */}
         <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 mb-6">
           <form
             onSubmit={handleSearch}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4"
           >
-            {/* Code */}
             <div className="col-span-1">
               <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
                 Mã Booking
@@ -356,7 +315,6 @@ const BookingManagementBusinessPage = () => {
               />
             </div>
 
-            {/* Customer */}
             <div className="col-span-1">
               <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
                 Khách hàng
@@ -371,7 +329,6 @@ const BookingManagementBusinessPage = () => {
               />
             </div>
 
-            {/* Type */}
             <div className="col-span-1">
               <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
                 Loại dịch vụ
@@ -391,7 +348,6 @@ const BookingManagementBusinessPage = () => {
               </select>
             </div>
 
-            {/* Status */}
             <div className="col-span-1">
               <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
                 Trạng thái
@@ -411,7 +367,6 @@ const BookingManagementBusinessPage = () => {
               </select>
             </div>
 
-            {/* Dates */}
             <div className="col-span-1">
               <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
                 Từ ngày
@@ -425,7 +380,6 @@ const BookingManagementBusinessPage = () => {
               />
             </div>
 
-            {/* End Date */}
             <div className="col-span-1">
               <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">
                 Đến ngày
@@ -451,7 +405,6 @@ const BookingManagementBusinessPage = () => {
           </form>
         </div>
 
-        {/* Table Section */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col">
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
@@ -465,8 +418,7 @@ const BookingManagementBusinessPage = () => {
                   </th>
                   <th className="px-6 py-4 font-semibold text-slate-600">
                     Ngày tạo
-                  </th>{" "}
-                  {/* <-- ĐÃ THÊM CỘT MỚI */}
+                  </th>
                   <th className="px-6 py-4 font-semibold text-slate-600 text-right">
                     Tổng tiền
                   </th>
@@ -482,7 +434,6 @@ const BookingManagementBusinessPage = () => {
                 {loading ? (
                   <tr>
                     <td colSpan="6" className="px-6 py-12 text-center">
-                      {/* Cập nhật colspan lên 6 */}
                       <div className="flex flex-col items-center justify-center text-slate-500">
                         <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-2"></div>
                         <span>Đang tải dữ liệu...</span>
@@ -492,7 +443,7 @@ const BookingManagementBusinessPage = () => {
                 ) : bookings.length === 0 ? (
                   <tr>
                     <td
-                      colSpan="6" // Cập nhật colspan lên 6
+                      colSpan="6"
                       className="px-6 py-12 text-center text-slate-500"
                     >
                       <div className="flex flex-col items-center justify-center">
@@ -528,7 +479,6 @@ const BookingManagementBusinessPage = () => {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-slate-600">
-                        {/* HIỂN THỊ TRƯỜNG MỚI createdAt */}
                         <div className="text-xs font-mono">
                           {formatDateTime(item.createdAt)}
                         </div>
@@ -562,9 +512,7 @@ const BookingManagementBusinessPage = () => {
             </table>
           </div>
 
-          {/* Advanced Pagination */}
           <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50/50 gap-4">
-            {/* Left: Page Size & Info */}
             <div className="flex items-center gap-4 text-sm text-slate-600">
               <div className="flex items-center gap-2">
                 <span>Hiển thị</span>
@@ -586,7 +534,6 @@ const BookingManagementBusinessPage = () => {
               </span>
             </div>
 
-            {/* Right: Pagination Controls */}
             <div className="flex items-center gap-1">
               <button
                 onClick={() => handlePageChange(1)}
@@ -647,7 +594,6 @@ const BookingManagementBusinessPage = () => {
         </div>
       </div>
 
-      {/* Modal Update Status */}
       {isModalOpen && (
         <div
           className="fixed inset-0 z-50 overflow-y-auto"
@@ -684,7 +630,6 @@ const BookingManagementBusinessPage = () => {
                         </span>
                       </p>
 
-                      {/* HIỂN THỊ created & updated (NẾU CÓ) TRONG MODAL */}
                       <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg text-xs text-slate-600">
                         <p>
                           <span className="font-medium mr-1">Ngày tạo:</span>
@@ -703,7 +648,6 @@ const BookingManagementBusinessPage = () => {
                           </p>
                         )}
                       </div>
-                      {/* END HIỂN THỊ created & updated */}
 
                       <div className="space-y-3">
                         {Object.entries(BOOKING_STATUS).map(([key, config]) => (

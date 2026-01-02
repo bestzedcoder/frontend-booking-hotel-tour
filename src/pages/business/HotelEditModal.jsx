@@ -17,7 +17,6 @@ const HotelEditModal = ({
   const [oldImageUrls, setOldImageUrls] = useState([]);
   const [newImages, setNewImages] = useState([]);
 
-  // 1. Cập nhật State khi Modal mở hoặc initialData thay đổi
   useEffect(() => {
     if (isOpen && initialData) {
       setName(initialData.hotelName || "");
@@ -29,27 +28,23 @@ const HotelEditModal = ({
       setAddress(initialData.hotelAddress || "");
       setDescription(initialData.hotelDescription || "");
       setOldImageUrls(initialData.hotelImages || []);
-      setNewImages([]); // Reset ảnh mới khi mở modal mới
+      setNewImages([]);
     }
   }, [isOpen, initialData]);
 
-  // 2. Cleanup: Thu hồi URL tạm thời khi component unmount hoặc modal đóng
   useEffect(() => {
-    // Hàm cleanup chạy khi effect này chạy lại hoặc component unmount
     return () => {
       newImages.forEach((file) => {
         if (file.url) {
-          // Kiểm tra nếu URL tạm đã được tạo
           URL.revokeObjectURL(file.url);
         }
       });
     };
-  }, [newImages]); // Chạy lại khi danh sách ảnh mới thay đổi
+  }, [newImages]);
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
     const filesWithUrl = files.map((file) => {
-      // Tạo URL tạm thời và lưu nó vào đối tượng File để dễ quản lý
       file.url = URL.createObjectURL(file);
       return file;
     });
@@ -62,7 +57,6 @@ const HotelEditModal = ({
   };
 
   const handleRemoveNewImage = (fileToRemove) => {
-    // Thu hồi URL tạm thời ngay lập tức
     URL.revokeObjectURL(fileToRemove.url);
     setNewImages((prev) => prev.filter((file) => file !== fileToRemove));
   };
@@ -89,7 +83,6 @@ const HotelEditModal = ({
     onSave(updatedData);
   };
 
-  // 3. Hiển thị Ảnh Hiện Tại & Ảnh Mới (View)
   const previewImages = useMemo(() => {
     const oldPreviews = oldImageUrls.map((url) => ({
       id: url,
@@ -97,7 +90,6 @@ const HotelEditModal = ({
       isNew: false,
     }));
 
-    // Sử dụng URL đã được lưu trong đối tượng File
     const newPreviews = newImages.map((file) => ({
       id: file.url,
       url: file.url,
@@ -127,7 +119,6 @@ const HotelEditModal = ({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Trường Tên Khách sạn */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Tên Khách sạn
@@ -141,7 +132,6 @@ const HotelEditModal = ({
             />
           </div>
 
-          {/* Trường Số Sao và Tỉnh/Thành phố (giữ nguyên logic) */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -185,7 +175,6 @@ const HotelEditModal = ({
             </div>
           </div>
 
-          {/* Trường Địa Chỉ */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Địa Chỉ
@@ -199,7 +188,6 @@ const HotelEditModal = ({
             />
           </div>
 
-          {/* Trường Mô Tả */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Mô Tả
@@ -213,7 +201,6 @@ const HotelEditModal = ({
             />
           </div>
 
-          {/* Quản lý Ảnh */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Quản lý Ảnh Khách sạn (Tổng: **{previewImages.length}** ảnh)
@@ -263,7 +250,6 @@ const HotelEditModal = ({
             </div>
           </div>
 
-          {/* Nút Lưu */}
           <div className="pt-4 border-t flex justify-end">
             <button
               type="submit"

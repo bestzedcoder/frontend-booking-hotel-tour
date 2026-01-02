@@ -1,12 +1,8 @@
-// HotelAndRoomDetail.jsx
-
 import { useState, useEffect, useMemo, useCallback } from "react";
 import RoomListTable from "./RoomListTable";
 import RoomFormModal from "./RoomFormModal";
 import RoomFilter from "./RoomFilter";
-// 🆕 Import HotelEditModal
 import HotelEditModal from "./HotelEditModal";
-// 🔑 Import đầy đủ constants và mock data
 import {
   RoomStatus,
   RoomType,
@@ -17,21 +13,9 @@ import { useApi } from "../../hooks/useApi";
 import { useNavigate, useParams } from "react-router-dom";
 import HotelDetailSection from "./HotelDetailSection";
 
-// 🚨 GIẢ LẬP API CALL: Thay thế bằng hàm callApi thực tế của bạn
-const fakeCallApi = (endpoint, data) =>
-  new Promise((resolve) =>
-    setTimeout(() => {
-      console.log(`[API Call] Endpoint: ${endpoint}`, data);
-      resolve({ success: true, data: data || mockHotelData });
-    }, 800)
-  );
-
 const ITEMS_PER_PAGE = 10;
 
 const HotelAndRoomDetail = () => {
-  // ------------------------------------
-  // 1. STATE MANAGEMENT
-  // ------------------------------------
   const [hotelData, setHotelData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isHotelModalOpen, setIsHotelModalOpen] = useState(false);
@@ -49,11 +33,6 @@ const HotelAndRoomDetail = () => {
     navigate(-1);
   };
 
-  // ------------------------------------
-  // 2. DATA FETCHING (API)
-  // ------------------------------------
-
-  // 🔑 Hàm Fetch API
   const fetchHotelData = useCallback(async () => {
     setIsLoading(true);
     const response = await callApi("get", `/hotels/${id}`);
@@ -70,15 +49,9 @@ const HotelAndRoomDetail = () => {
     fetchHotelData();
   }, [fetchHotelData]);
 
-  // ------------------------------------
-  // 3. HOTEL EDIT API HANDLER
-  // ------------------------------------
-
   const handleUpdateHotel = async (updatedData) => {
     setIsSaving(true);
     const { newImages, ...hotelDetails } = updatedData;
-
-    // 2. Chuẩn bị Payload cho API cập nhật hotel
 
     const data = {
       hotelName: hotelDetails.name,
@@ -94,7 +67,6 @@ const HotelAndRoomDetail = () => {
 
     const formData = new FormData();
 
-    // Chuyển object hotelData thành JSON string và gắn vào field "data"
     formData.append(
       "data",
       new Blob(
@@ -107,12 +79,10 @@ const HotelAndRoomDetail = () => {
       )
     );
 
-    // Thêm tất cả ảnh
     newImages.forEach((file) => {
       formData.append("images", file);
     });
 
-    // Gọi API
     const response = await callApi("put", `/hotels/${id}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
@@ -126,13 +96,6 @@ const HotelAndRoomDetail = () => {
     setIsSaving(false);
     fetchHotelData();
   };
-
-  // ------------------------------------
-  // 4. ROOM CRUD API HANDLERS
-  // ------------------------------------
-
-  // 🔑 Lưu ý: Sau khi CRUD phòng thành công, nên gọi lại fetchHotelData()
-  // Hoặc cập nhật state `setHotelData` bằng dữ liệu trả về từ API.
 
   const handleAddRooms = async (newRoomData) => {
     setIsSaving(true);
@@ -187,7 +150,6 @@ const HotelAndRoomDetail = () => {
     }
   };
 
-  // ... openAddModal, openEditModal ...
   const openAddModal = () => {
     setEditingRoom(null);
     setIsModalOpen(true);
@@ -197,9 +159,6 @@ const HotelAndRoomDetail = () => {
     setIsModalOpen(true);
   };
 
-  // ------------------------------------
-  // 5. FILTERING & PAGINATION (Giữ nguyên)
-  // ------------------------------------
   const filteredRooms = useMemo(() => {
     if (!hotelData) return [];
     let rooms = hotelData.rooms;
@@ -234,9 +193,6 @@ const HotelAndRoomDetail = () => {
     }
   };
 
-  // ------------------------------------
-  // 6. CONDITIONAL RENDERING
-  // ------------------------------------
   if (isLoading || !hotelData) {
     return (
       <div className="p-8 max-w-7xl mx-auto">
@@ -324,7 +280,6 @@ const HotelAndRoomDetail = () => {
         isSaving={isSaving}
       />
 
-      {/* 🆕 MODAL CHỈNH SỬA KHÁCH SẠN */}
       <HotelEditModal
         isOpen={isHotelModalOpen}
         onClose={() => setIsHotelModalOpen(false)}

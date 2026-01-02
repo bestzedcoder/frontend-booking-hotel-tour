@@ -5,7 +5,7 @@ export const BusinessSidebar = () => {
   const location = useLocation();
 
   const navItems = [
-    { name: "Tổng quan", icon: Briefcase, path: "/business" },
+    { name: "Tổng quan", icon: Briefcase, path: "/business/dashboard" },
     { name: "Quản lý Khách sạn", icon: Hotel, path: "/business/my-hotels" },
     { name: "Quản lý Tour", icon: Plane, path: "/business/my-tours" },
     { name: "Lịch đặt chỗ", icon: Calendar, path: "/business/my-bookings" },
@@ -13,7 +13,6 @@ export const BusinessSidebar = () => {
 
   return (
     <aside className="fixed top-0 left-0 w-64 h-full bg-gray-900 text-white shadow-xl z-50 flex flex-col pt-4 pb-6">
-      {/* Tiêu đề Business Panel */}
       <div className="px-6 pb-6 border-b border-gray-700/50">
         <h1 className="text-2xl font-extrabold tracking-tight text-green-400">
           Partner Portal
@@ -21,7 +20,6 @@ export const BusinessSidebar = () => {
         <p className="text-gray-400 text-sm mt-1">Quản lý dịch vụ</p>
       </div>
 
-      {/* Menu Điều Hướng */}
       <nav className="mt-8 flex-grow overflow-y-auto">
         <ul className="space-y-2">
           {navItems.map((item) => {
@@ -50,7 +48,6 @@ export const BusinessSidebar = () => {
         </ul>
       </nav>
 
-      {/* Footer Sidebar */}
       <div className="px-6 pt-6 border-t border-gray-700/50 mt-auto">
         <p className="text-xs text-gray-500">
           © {new Date().getFullYear()} TravelMate

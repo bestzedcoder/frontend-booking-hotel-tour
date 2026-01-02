@@ -1,11 +1,11 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useApi } from "../hooks/useApi";
+import { Lock, Mail } from "lucide-react";
 
 export default function VerifyAccountPage() {
   const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState(["", "", "", "", "", "", "", ""]);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const { callApi } = useApi();
   const navigate = useNavigate();
@@ -20,43 +20,72 @@ export default function VerifyAccountPage() {
     }
   };
 
+  const handleKeyDown = (e, index) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      document.getElementById(`otp-${index - 1}`).focus();
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(otp);
     const code = otp.join("");
-    setLoading(true);
-    const res = await callApi("post", "/auth/verify", { email, code });
-
-    if (!res.success) {
-      alert("❌ Invalid verification code.");
-      setLoading(false);
+    if (code.length !== 6) {
+      alert("Mã xác thực phải đủ 6 chữ số.");
       return;
     }
 
-    alert("✅ Account verified! You can now login.");
+    setLoading(true);
+
+    const payload = {
+      email: email.trim(),
+      code: otp
+        .reduce((cur, val) => {
+          return cur + val;
+        }, "")
+        .trim(),
+    };
+
+    const res = await callApi("post", "auth/verify", payload);
+
+    if (!res.success) {
+      alert("❌ Mã xác thực không hợp lệ hoặc email sai.");
+      setLoading(false);
+      setOtp(["", "", "", "", "", ""]);
+      return;
+    }
+
+    alert("✅ Tài khoản đã được xác thực! Bây giờ bạn có thể đăng nhập.");
     setLoading(false);
     navigate("/login");
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="bg-white text-gray-500 max-w-96 mx-auto mt-12 md:py-10 md:px-6 px-4 py-8 text-left text-sm rounded-lg shadow-lg"
-    >
-      <h2 className="text-2xl font-semibold mb-4 text-center text-gray-800">
-        Two-factor Authentication
+    <form onSubmit={handleSubmit} className="text-gray-600 w-full">
+      <div className="flex justify-center mb-6">
+        <Lock className="w-10 h-10 text-indigo-500" />
+      </div>
+
+      <h2 className="text-3xl font-extrabold mb-3 text-center text-gray-800">
+        Xác thực Tài khoản
       </h2>
-      <p>Please enter the 8-digit verification code sent to your email.</p>
+      <p className="text-center mb-6 text-sm">
+        Vui lòng nhập mã xác thực gồm 6 chữ số đã được gửi tới email của bạn.
+      </p>
 
-      <input
-        type="email"
-        required
-        className="w-full border rounded mt-4 p-2"
-        placeholder="Enter your email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+      <div className="relative mb-6">
+        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <input
+          type="email"
+          required
+          className="w-full border border-gray-300 rounded-lg p-3 pl-10 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition duration-200"
+          placeholder="Nhập email của bạn"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+      </div>
 
-      <div className="flex items-center justify-between mt-4 mb-6">
+      <div className="flex items-center justify-between mt-4 mb-8 space-x-2">
         {otp.map((digit, i) => (
           <input
             key={i}
@@ -65,7 +94,8 @@ export default function VerifyAccountPage() {
             maxLength="1"
             value={digit}
             onChange={(e) => handleChange(e.target.value, i)}
-            className="otp-input w-10 h-10 border border-gray-300 outline-none rounded text-center text-lg focus:border-indigo-500/60 transition duration-300"
+            onKeyDown={(e) => handleKeyDown(e, i)}
+            className="otp-input w-10 h-12 border-2 border-gray-300 outline-none rounded-lg text-center text-xl font-bold focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition duration-300"
             required
           />
         ))}
@@ -73,11 +103,21 @@ export default function VerifyAccountPage() {
 
       <button
         type="submit"
-        disabled={loading}
-        className="w-full bg-gray-800 py-2.5 rounded text-white active:scale-95 transition"
+        disabled={loading || otp.join("").length !== 6}
+        className={`w-full py-3 rounded-lg text-white text-lg font-bold transition transform shadow-md ${
+          loading || otp.join("").length !== 6
+            ? "bg-gray-400 cursor-not-allowed shadow-none"
+            : "bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] active:shadow-sm"
+        }`}
       >
-        {loading ? "Verifying..." : "Verify"}
+        {loading ? "Đang xác thực..." : "Xác thực"}
       </button>
+
+      <div className="mt-6 text-center text-sm text-gray-500">
+        <a href="#" className="hover:text-indigo-600 transition">
+          Không nhận được mã? Gửi lại
+        </a>
+      </div>
     </form>
   );
 }

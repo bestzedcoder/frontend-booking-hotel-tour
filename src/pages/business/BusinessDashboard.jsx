@@ -4,12 +4,9 @@ import {
   ShoppingCart,
   Loader2,
   Map as MapIcon,
-  TrendingUp,
   DollarSign,
 } from "lucide-react";
-// Đảm bảo đường dẫn import hook useApi đúng với cấu trúc dự án của bạn
 import { useApi } from "../../hooks/useApi";
-
 import {
   BarChart,
   Bar,
@@ -21,7 +18,6 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// --- COMPONENT CON: METRIC CARD ---
 const MetricCard = ({ icon: Icon, title, value, color, bg }) => (
   <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center transition-all hover:shadow-md">
     <div className={`p-4 rounded-full ${bg} ${color} mr-4`}>
@@ -36,7 +32,6 @@ const MetricCard = ({ icon: Icon, title, value, color, bg }) => (
   </div>
 );
 
-// --- COMPONENT CHÍNH: BUSINESS DASHBOARD ---
 export const BusinessDashboard = () => {
   const { callApi } = useApi();
 
@@ -48,14 +43,12 @@ export const BusinessDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Helper: Format ngày từ "2025-10-31T..." -> "T10/2025"
   const formatDateLabel = (isoString) => {
     if (!isoString) return "";
     const date = new Date(isoString);
     return `T${date.getMonth() + 1}/${date.getFullYear()}`;
   };
 
-  // Helper: Format tiền tệ VNĐ
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -68,13 +61,11 @@ export const BusinessDashboard = () => {
       setLoading(true);
       setError(null);
       try {
-        // 🚨 Gọi 2 API Business song song
         const [resSummary, resRevenue] = await Promise.all([
           callApi("get", "/summary/business"),
           callApi("get", "/summary/business/revenue-by-month"),
         ]);
 
-        // Xử lý dữ liệu Doanh thu (Map ngày tháng)
         const processedRevenue = (resRevenue.data || []).map((item) => ({
           name: formatDateLabel(item.month),
           revenue: item.revenue,
@@ -97,8 +88,6 @@ export const BusinessDashboard = () => {
     fetchDashboardData();
   }, [callApi]);
 
-  // --- RENDER ---
-
   if (loading) {
     return (
       <div className="h-screen flex flex-col items-center justify-center bg-gray-50">
@@ -120,12 +109,10 @@ export const BusinessDashboard = () => {
     );
   }
 
-  // Giả định API Business Summary trả về totalHotels, totalTours, totalBookings
   const summary = data.summary || {};
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen font-sans">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-800">
           📊 Dashboard Đối Tác
@@ -135,7 +122,6 @@ export const BusinessDashboard = () => {
         </p>
       </div>
 
-      {/* 1. Metric Cards Area (Hotels, Tours, Bookings) */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <MetricCard
           icon={Building2}
@@ -160,7 +146,6 @@ export const BusinessDashboard = () => {
         />
       </div>
 
-      {/* 2. Charts Area: Monthly Revenue */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
           <DollarSign size={20} className="text-green-500" />
@@ -196,7 +181,7 @@ export const BusinessDashboard = () => {
               <Bar
                 dataKey="revenue"
                 name="Doanh thu (VNĐ)"
-                fill="#10b981" // Green-500
+                fill="#10b981"
                 radius={[6, 6, 0, 0]}
                 barSize={60}
                 activeBar={{ fill: "#059669" }}

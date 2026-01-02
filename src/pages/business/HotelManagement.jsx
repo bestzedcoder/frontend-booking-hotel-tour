@@ -20,16 +20,7 @@ import { Link } from "react-router-dom";
 
 const PAGE_LIMIT = 10;
 
-// --- SIMULATE API CALL ---
-
-/**
- * Mô phỏng việc gọi API searchHotels trả về PageResponse<T>
- */
-
-// Custom Alert/Confirmation - Thay thế cho window.alert/confirm
 const handleAlert = (message) => console.log(message);
-
-// --- CREATE HOTEL MODAL COMPONENT ---
 
 const CreateHotelModal = ({
   isOpen,
@@ -52,42 +43,34 @@ const CreateHotelModal = ({
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    // Reset form state and errors when modal is opened/closed
     if (!isOpen) {
       setHotel(initialHotelState);
       setErrors({});
     }
   }, [isOpen]);
 
-  // Hàm Validation (Kiểm tra dữ liệu đầu vào)
   const validate = () => {
     let newErrors = {};
     const descLength = hotel.hotelDescription.length;
 
-    // hotelName (NotBlank)
     if (!hotel.hotelName.trim())
       newErrors.hotelName = "Tên khách sạn không được để trống.";
 
-    // hotelAddress (NotBlank)
     if (!hotel.hotelAddress.trim())
       newErrors.hotelAddress = "Địa chỉ không được để trống.";
 
-    // hotelCity (NotBlank)
     if (!hotel.hotelCity)
       newErrors.hotelCity = "Thành phố không được để trống.";
 
-    // hotelStar (NotNull - Dùng 0 làm giá trị mặc định "chưa chọn")
     if (hotel.hotelStar === 0)
       newErrors.hotelStar = "Hạng sao không được để trống.";
 
-    // hotelDescription (NotBlank & Size Max 1000)
     if (!hotel.hotelDescription.trim()) {
       newErrors.hotelDescription = "Mô tả không được để trống.";
     } else if (descLength > 1000) {
       newErrors.hotelDescription = `Mô tả tối đa 1000 ký tự (hiện tại: ${descLength}).`;
     }
 
-    // images (Multiple, check if at least one selected)
     if (hotel.images.length === 0)
       newErrors.images = "Vui lòng chọn ít nhất một hình ảnh.";
 
@@ -124,7 +107,6 @@ const CreateHotelModal = ({
       setIsLoading(true);
       const formData = new FormData();
 
-      // Chuyển object hotelData thành JSON string và gắn vào field "data"
       formData.append(
         "data",
         new Blob(
@@ -141,12 +123,10 @@ const CreateHotelModal = ({
         )
       );
 
-      // Thêm tất cả ảnh
       hotel.images.forEach((file) => {
         formData.append("images", file);
       });
 
-      // Gọi API
       const response = await callApi("post", "/hotels/create", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -164,7 +144,6 @@ const CreateHotelModal = ({
   if (!isOpen) return null;
 
   return (
-    // Modal Overlay
     <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4 transition-opacity duration-300">
       <div
         className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-100"
@@ -186,7 +165,6 @@ const CreateHotelModal = ({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Hotel Name */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Tên Khách Sạn <span className="text-red-500">*</span>
@@ -206,7 +184,6 @@ const CreateHotelModal = ({
               )}
             </div>
 
-            {/* Hotel Address */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Địa Chỉ <span className="text-red-500">*</span>
@@ -228,7 +205,6 @@ const CreateHotelModal = ({
               )}
             </div>
 
-            {/* Hotel City */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Thành Phố <span className="text-red-500">*</span>
@@ -256,7 +232,6 @@ const CreateHotelModal = ({
               )}
             </div>
 
-            {/* Hotel Star */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Hạng Sao <span className="text-red-500">*</span>
@@ -285,7 +260,6 @@ const CreateHotelModal = ({
             </div>
           </div>
 
-          {/* Hotel Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Mô Tả Khách Sạn ({hotel.hotelDescription.length}/1000){" "}
@@ -309,7 +283,6 @@ const CreateHotelModal = ({
             )}
           </div>
 
-          {/* Image Upload */}
           <div className="border p-4 rounded-xl border-dashed border-gray-300 hover:border-green-500 transition duration-200">
             <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center">
               <UploadCloud className="w-5 h-5 mr-2 text-green-600" />
@@ -365,15 +338,11 @@ const CreateHotelModal = ({
   );
 };
 
-// --- MAIN COMPONENT ---
-
 export const HotelManagementPage = () => {
-  // State 1: Input của người dùng (chưa thực hiện tìm kiếm)
   const [filterName, setFilterName] = useState("");
   const [filterStars, setFilterStars] = useState(0);
   const [filterCity, setFilterCity] = useState("");
 
-  // State 2: Tham số tìm kiếm chính thức (chỉ thay đổi khi nhấn Search)
   const [searchParams, setSearchParams] = useState({
     name: "",
     stars: 0,
@@ -381,7 +350,6 @@ export const HotelManagementPage = () => {
     page: 1,
   });
 
-  // State 3: Phân trang và kết quả
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [hotelData, setHotelData] = useState({
@@ -418,35 +386,25 @@ export const HotelManagementPage = () => {
     setLoading(false);
   };
 
-  // State 4: Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // --- LOGIC TÌM KIẾM VÀ PHÂN TRANG ---
-
-  // Hàm kích hoạt tìm kiếm mới
   const handleSearch = () => {
-    // 1. Cập nhật tham số tìm kiếm chính thức từ input
     setSearchParams({
       name: filterName,
       stars: filterStars,
       city: filterCity,
       page: 1,
     });
-    // 2. Luôn reset về trang 1 khi thực hiện tìm kiếm mới
     setCurrentPage(1);
   };
 
-  // useEffect để tự động fetch data khi searchParams hoặc currentPage thay đổi
   useEffect(() => {
-    // Ngăn fetch khi đang tải
     if (loading) return;
     fetchHotels();
   }, [searchParams]);
 
-  // Hành động CRUD mock
   const handleAdd = () => setIsModalOpen(true);
 
-  // Xử lý lưu dữ liệu từ Modal (Mô phỏng API POST thành công)
   const handleSaveHotel = (newHotelData) => {
     handleAlert(`Đã thêm thành công Khách sạn mới: ${newHotelData.hotelName}.`);
 
@@ -458,8 +416,7 @@ export const HotelManagementPage = () => {
     const confirmed = window.confirm(
       `Bạn có chắc chắn muốn xóa Khách sạn ID: ${id}?`
     );
-    if (!confirmed) return; // nếu user nhấn Cancel thì dừng
-    // Thực hiện xóa
+    if (!confirmed) return;
     const response = await callApi("delete", `/hotels/${id}`);
     if (!response.success) {
       alert(`Xóa thất bại: ${response.message}`);
@@ -469,8 +426,6 @@ export const HotelManagementPage = () => {
     alert("Xóa khách sạn thành công!");
     handleAlert(`Yêu cầu xác nhận xóa Khách sạn ID: ${id}.`);
   };
-
-  // --- UI COMPONENTS ---
 
   const PaginationControls = () => (
     <div className="flex flex-col md:flex-row justify-between items-center px-4 py-3 bg-white border-t rounded-b-xl">
@@ -529,7 +484,6 @@ export const HotelManagementPage = () => {
 
   return (
     <div className=" p-4 md:p-8 bg-gray-50 min-h-screen font-sans">
-      {/* 1. Header & Nút Thêm Mới */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 pb-4">
         <h1 className="text-3xl font-bold text-gray-800 flex items-center mb-4 md:mb-0">
           <Hotel className="w-7 h-7 mr-3 text-green-600" />
@@ -544,13 +498,11 @@ export const HotelManagementPage = () => {
         </button>
       </header>
 
-      {/* 2. Thanh Tìm Kiếm và Bộ Lọc */}
       <div className="bg-white p-6 rounded-xl shadow-2xl border border-gray-100">
         <h2 className="text-xl font-semibold text-gray-700 mb-4">
           Bộ Lọc Tìm Kiếm
         </h2>
         <div className="grid md:grid-cols-4 gap-5 bg-white/70 backdrop-blur-sm border border-gray-100 rounded-2xl p-6 shadow-md">
-          {/* Lọc theo Tên Khách Sạn */}
           <div className="relative">
             <label className="text-sm font-medium text-gray-600 mb-1 block">
               Tên Khách Sạn
@@ -567,7 +519,6 @@ export const HotelManagementPage = () => {
             </div>
           </div>
 
-          {/* Lọc theo Số Sao */}
           <div className="relative">
             <label className="text-sm font-medium text-gray-600 mb-1 block">
               Số Sao
@@ -589,7 +540,6 @@ export const HotelManagementPage = () => {
             </div>
           </div>
 
-          {/* Lọc theo Thành phố */}
           <div className="relative">
             <label className="text-sm font-medium text-gray-600 mb-1 block">
               Thành Phố
@@ -611,7 +561,6 @@ export const HotelManagementPage = () => {
             </div>
           </div>
 
-          {/* Nút Tìm Kiếm */}
           <div className="flex items-end">
             <button
               onClick={handleSearch}
@@ -625,9 +574,7 @@ export const HotelManagementPage = () => {
         </div>
       </div>
 
-      {/* 3. Bảng Hiển Thị Kết Quả */}
       <div className="bg-white rounded-xl shadow-2xl overflow-hidden relative">
-        {/* Loading Overlay */}
         {loading && (
           <div className="absolute inset-0 bg-white bg-opacity-70 flex flex-col items-center justify-center z-10 rounded-xl">
             <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-green-600"></div>
@@ -674,12 +621,10 @@ export const HotelManagementPage = () => {
                       key={hotel.hotelId}
                       className="hover:bg-gray-50 transition duration-150"
                     >
-                      {/* Tên khách sạn */}
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         {hotel.hotelName}
                       </td>
 
-                      {/* Địa chỉ */}
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 h-full">
                         <div className="flex items-center gap-1 h-full">
                           <MapPin className="w-4 h-4 text-red-500 flex-shrink-0" />
@@ -687,12 +632,10 @@ export const HotelManagementPage = () => {
                         </div>
                       </td>
 
-                      {/* Thành phố */}
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
                         {hotel.city}
                       </td>
 
-                      {/* Hạng sao */}
                       <td className="px-6 py-4 whitespace-nowrap text-sm h-full">
                         <div className="flex items-center justify-center h-full">
                           {Array(starCount)
@@ -706,7 +649,6 @@ export const HotelManagementPage = () => {
                         </div>
                       </td>
 
-                      {/* Mô tả */}
                       <td
                         className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate"
                         title={hotel.description}
@@ -714,7 +656,6 @@ export const HotelManagementPage = () => {
                         {hotel.description}
                       </td>
 
-                      {/* Hành động */}
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex items-center justify-center gap-2">
                         <Link
                           to={`/business/my-hotels/${hotel.hotelId}/details`}
@@ -750,12 +691,9 @@ export const HotelManagementPage = () => {
           </table>
         </div>
 
-        {/* 4. Bộ Điều Khiển Phân Trang */}
-        {/* Chỉ hiển thị nếu có dữ liệu */}
         {hotelData.totalElements > 0 && <PaginationControls />}
       </div>
 
-      {/* 5. Create Hotel Modal */}
       <CreateHotelModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

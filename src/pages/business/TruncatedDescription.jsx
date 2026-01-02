@@ -5,7 +5,6 @@ const MAX_LENGTH = 20;
 const TruncatedDescription = ({ description }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  // Nếu mô tả ngắn hoặc rỗng, hiển thị toàn bộ
   if (!description || description.length <= MAX_LENGTH) {
     return (
       <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
@@ -14,7 +13,6 @@ const TruncatedDescription = ({ description }) => {
     );
   }
 
-  // Cắt chuỗi
   const truncatedText = description.substring(0, MAX_LENGTH) + "...";
 
   const toggleExpanded = () => {
@@ -23,10 +21,6 @@ const TruncatedDescription = ({ description }) => {
 
   return (
     <div>
-      {/* Sử dụng 'whitespace-pre-line' ở đây
-        để văn bản dài TỰ ĐỘNG XUỐNG DÒNG khi tràn lề 
-        và vẫn tôn trọng ký tự xuống dòng (\n) trong dữ liệu gốc.
-      */}
       <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
         {isExpanded ? description : truncatedText}
       </p>
@@ -41,6 +35,4 @@ const TruncatedDescription = ({ description }) => {
   );
 };
 
-// ... sử dụng component này trong trang chi tiết của bạn ...
-
-export default TruncatedDescription; // Export để sử dụng
+export default TruncatedDescription;

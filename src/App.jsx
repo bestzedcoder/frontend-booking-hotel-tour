@@ -76,7 +76,14 @@ function App() {
           }
         />
 
-        <Route path="/client/*" element={<CustomerLayout />}>
+        <Route
+          path="/client/*"
+          element={
+            <ProtectedRoute allowedRole="ROLE_CUSTOMER">
+              <CustomerLayout />
+            </ProtectedRoute>
+          }
+        >
           <Route path="dashboard" element={<HomePage />} />
           <Route path="hotels" element={<HotelSearchPage />} />
           <Route path="hotels/:id/details" element={<HotelDetailsPage />} />

@@ -76,7 +76,7 @@ const Navbar = () => {
         {user ? (
           <div className="flex items-center gap-4">
             <Link
-              to="/client/profile"
+              to="/profile"
               className="hover:text-indigo-600 transition flex items-center gap-2"
             >
               <img

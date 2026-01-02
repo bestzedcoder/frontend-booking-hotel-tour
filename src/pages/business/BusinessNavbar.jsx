@@ -7,7 +7,6 @@ export const BusinessNavbar = () => {
   const { user, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  // Lấy thông tin người dùng
   const businessName = user?.fullName || "Đối tác Kinh doanh";
   const avatar =
     user?.urlImage ?? "https://cdn-icons-png.flaticon.com/512/149/149071.png";
@@ -15,13 +14,11 @@ export const BusinessNavbar = () => {
   return (
     <nav className="fixed top-0 right-0 left-0 md:left-64 h-16 bg-white shadow-sm flex items-center justify-end px-6 z-40 border-b border-gray-100">
       <div className="flex items-center space-x-4">
-        {/* Nút Thông Báo */}
         <button className="relative p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition">
           <Bell className="w-5 h-5 text-gray-600" />
           <span className="absolute top-1 right-1 block w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
         </button>
 
-        {/* Menu Người Dùng/Đối tác */}
         <div className="relative">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}

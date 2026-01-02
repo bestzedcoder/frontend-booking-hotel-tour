@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   PlusIcon,
   MagnifyingGlassIcon,
@@ -12,81 +12,6 @@ import { Link } from "react-router-dom";
 import { VIETNAM_PROVINCES } from "../../utils/contain";
 import { useApi } from "../../hooks/useApi";
 
-// --- Dữ liệu giả mô phỏng API ---
-const mockTours = [
-  {
-    tourId: 1,
-    tourName: "Khám phá Vịnh Hạ Long 3 Ngày",
-    tourCity: "Hạ Long",
-    tourStart: "2025-12-01",
-    tourEnd: "2025-12-03",
-    tourPrice: 8000000,
-    tourDuration: 3,
-    tourMaxPeople: 20,
-  },
-  {
-    tourId: 2,
-    tourName: "Tour ẩm thực Sài Gòn 1 Ngày",
-    tourCity: "Hồ Chí Minh",
-    tourStart: "2025-12-10",
-    tourEnd: "2025-12-10",
-    tourPrice: 1200000,
-    tourDuration: 1,
-    tourMaxPeople: 15,
-  },
-  {
-    tourId: 3,
-    tourName: "Du lịch văn hóa Cố đô Huế",
-    tourCity: "Huế",
-    tourStart: "2026-01-05",
-    tourEnd: "2026-01-08",
-    tourPrice: 6500000,
-    tourDuration: 4,
-    tourMaxPeople: 25,
-  },
-  {
-    tourId: 4,
-    tourName: "Trekking Fansipan 2 Ngày",
-    tourCity: "Sa Pa",
-    tourStart: "2025-11-25",
-    tourEnd: "2025-11-26",
-    tourPrice: 9000000,
-    tourDuration: 2,
-    tourMaxPeople: 10,
-  },
-  {
-    tourId: 5,
-    tourName: "Nghỉ dưỡng biển Nha Trang",
-    tourCity: "Nha Trang",
-    tourStart: "2026-02-14",
-    tourEnd: "2026-02-18",
-    tourPrice: 15000000,
-    tourDuration: 5,
-    tourMaxPeople: 30,
-  },
-  {
-    tourId: 6,
-    tourName: "Thám hiểm Đảo Phú Quốc",
-    tourCity: "Phú Quốc",
-    tourStart: "2026-03-01",
-    tourEnd: "2026-03-04",
-    tourPrice: 10500000,
-    tourDuration: 4,
-    tourMaxPeople: 22,
-  },
-  {
-    tourId: 7,
-    tourName: "Du lịch Miền Tây Sông Nước",
-    tourCity: "Cần Thơ",
-    tourStart: "2025-11-15",
-    tourEnd: "2025-11-17",
-    tourPrice: 4800000,
-    tourDuration: 3,
-    tourMaxPeople: 18,
-  },
-];
-
-// Hàm format tiền tệ (giữ nguyên)
 const formatCurrencyVND = (amount) => {
   const number = Number(amount);
   if (isNaN(number)) return "";
@@ -97,10 +22,8 @@ const formatCurrencyVND = (amount) => {
   }).format(number);
 };
 
-// --- Component Modal Xác Nhận Xóa (Giữ nguyên) ---
 const DeleteConfirmationModal = ({ tour, isOpen, onClose, onConfirm }) => {
   if (!isOpen) return null;
-  // ... (JSX của Modal giữ nguyên) ...
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-75 flex items-center justify-center z-50 transition-opacity duration-300">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-md m-4 transform transition-all duration-300 scale-100">
@@ -146,15 +69,12 @@ const DeleteConfirmationModal = ({ tour, isOpen, onClose, onConfirm }) => {
   );
 };
 
-// --- Component Chính TourManagementPage ---
 export const TourManagementPage = () => {
-  // --- STATE DỮ LIỆU ---
   const [tours, setTours] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const { callApi } = useApi();
 
-  // --- STATE TÌM KIẾM (Cho các ô input, thay đổi theo từng phím gõ) ---
   const [searchParams, setSearchParams] = useState({
     tourName: "",
     tourCity: "",
@@ -164,7 +84,6 @@ export const TourManagementPage = () => {
     endDate: "",
   });
 
-  // --- STATE TÌM KIẾM ĐÃ ÁP DỤNG (Chỉ thay đổi khi nhấn nút Tìm Kiếm) ---
   const [appliedSearchParams, setAppliedSearchParams] = useState({
     tourName: "",
     tourCity: "",
@@ -174,19 +93,16 @@ export const TourManagementPage = () => {
     endDate: "",
   });
 
-  // --- STATE PHÂN TRANG (Đồng bộ với PageResponse) ---
   const [pagination, setPagination] = useState({
-    page: 1, // currentPages
-    limit: 5, // pageSizes
-    totalItems: 0, // totalElements
-    totalPages: 1, // totalPages
+    page: 1,
+    limit: 5,
+    totalItems: 0,
+    totalPages: 1,
   });
 
-  // --- STATE MODAL XÓA ---
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tourToDelete, setTourToDelete] = useState(null);
 
-  // --- HÀM XỬ LÝ ---
   const createQueryString = (params) => {
     const query = Object.keys(params)
       .filter(
@@ -196,19 +112,16 @@ export const TourManagementPage = () => {
           params[key] !== undefined
       )
       .map((key) => {
-        // Đảm bảo mã hóa URL cho các giá trị (ví dụ: tên tour có dấu cách)
         return `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`;
       })
       .join("&");
     return query;
   };
 
-  // useCallback: Chỉ gọi API khi tham số ĐÃ ÁP DỤNG hoặc phân trang thay đổi
   const fetchTours = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      // SỬ DỤNG appliedSearchParams VÀ pagination.page/limit
       const params = {
         ...appliedSearchParams,
         page: pagination.page,
@@ -237,40 +150,30 @@ export const TourManagementPage = () => {
   }, [
     pagination.page,
     pagination.limit,
-    // Các tham số tìm kiếm đã áp dụng
     appliedSearchParams.tourName,
     appliedSearchParams.tourCity,
     appliedSearchParams.priceMin,
     appliedSearchParams.priceMax,
-    // Không cần ngày tháng vì chưa dùng trong mock
   ]);
 
-  // useEffect: Gọi API khi các dependency (tham số đã áp dụng hoặc trang) thay đổi
   useEffect(() => {
     fetchTours();
   }, [fetchTours]);
 
   const handleSearchChange = (e) => {
     const { name, value } = e.target;
-    // Cập nhật state searchParams (chỉ thay đổi input)
     setSearchParams((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
-    // 1. Reset trang về 1
     setPagination((prev) => ({ ...prev, page: 1 }));
-
-    // 2. Cập nhật appliedSearchParams để kích hoạt fetchTours qua useEffect
-    // Nếu page đã là 1, việc cập nhật này sẽ kích hoạt.
-    // Nếu page khác 1, việc reset page về 1 sẽ kích hoạt.
     setAppliedSearchParams(searchParams);
   };
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.totalPages) {
       setPagination((prev) => ({ ...prev, page: newPage }));
-      // Việc thay đổi pagination.page sẽ kích hoạt fetchTours qua useEffect
     }
   };
 
@@ -291,7 +194,6 @@ export const TourManagementPage = () => {
     }
   };
 
-  // --- TRÌNH BÀY JSX (Không thay đổi) ---
   return (
     <div className="p-8 bg-gray-50 min-h-screen font-sans">
       {tourToDelete && (
@@ -303,7 +205,6 @@ export const TourManagementPage = () => {
         />
       )}
 
-      {/* Header và Nút Thêm Tour */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-gray-200 pb-4">
         <h1 className="text-3xl font-bold text-gray-800 flex items-center mb-4 md:mb-0">
           <GlobeAltIcon className="w-7 h-7 mr-3 text-green-600" />
@@ -318,14 +219,12 @@ export const TourManagementPage = () => {
         </Link>
       </header>
 
-      {/* --- Bộ Lọc Tìm Kiếm --- */}
       <div className="mb-6 p-6 bg-white rounded-lg shadow-xl border border-gray-100">
         <h2 className="text-lg font-bold text-gray-700 mb-4">
           Bộ Lọc Tìm Kiếm
         </h2>
 
         <form onSubmit={handleSearch} className="space-y-4">
-          {/* Hàng 1: Tên Tour, Thành phố */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div className="md:col-span-2">
               <label
@@ -372,9 +271,7 @@ export const TourManagementPage = () => {
             </div>
           </div>
 
-          {/* Hàng 2: Giá Min/Max (VNĐ), Ngày Start/End */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end pt-2">
-            {/* Giá Min (VNĐ) */}
             <div>
               <label
                 htmlFor="priceMin"
@@ -394,7 +291,6 @@ export const TourManagementPage = () => {
               />
             </div>
 
-            {/* Giá Max (VNĐ) */}
             <div>
               <label
                 htmlFor="priceMax"
@@ -414,7 +310,6 @@ export const TourManagementPage = () => {
               />
             </div>
 
-            {/* Ngày Bắt Đầu */}
             <div>
               <label
                 htmlFor="startDate"
@@ -432,7 +327,6 @@ export const TourManagementPage = () => {
               />
             </div>
 
-            {/* Ngày Kết Thúc */}
             <div>
               <label
                 htmlFor="endDate"
@@ -451,7 +345,6 @@ export const TourManagementPage = () => {
             </div>
           </div>
 
-          {/* Nút Tìm Kiếm nằm cuối form */}
           <div className="flex justify-end pt-4">
             <button
               type="submit"
@@ -464,7 +357,6 @@ export const TourManagementPage = () => {
         </form>
       </div>
 
-      {/* --- Danh Sách Tour (Bảng - Hiển thị trạng thái) --- */}
       <div className="bg-white rounded-lg shadow-xl">
         {isLoading ? (
           <div className="p-8 text-center text-indigo-600 flex items-center justify-center">
@@ -591,12 +483,10 @@ export const TourManagementPage = () => {
           </div>
         )}
 
-        {/* Phân Trang */}
         <div className="flex items-center justify-between border-t border-gray-200 bg-white px-6 py-3 text-sm">
           <div className="text-gray-700">
             Hiển thị{" "}
             <span className="font-semibold">
-              {/* Tính toán index bắt đầu: (page - 1) * limit + 1 */}
               {(pagination.page - 1) * pagination.limit + 1}
             </span>{" "}
             đến{" "}
@@ -627,7 +517,6 @@ export const TourManagementPage = () => {
             </button>
 
             <div className="px-4 py-1.5 bg-green-500 text-white font-semibold rounded-lg shadow-sm">
-              {/* currentPages */}
               {pagination.page}
             </div>
 

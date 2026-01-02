@@ -17,15 +17,13 @@ const RoomFormModal = ({
     if (isOpen) {
       setErrors({});
       if (isEditing && initialData) {
-        // Chế độ Edit: Sao chép toàn bộ dữ liệu phòng
         setFormData({ ...initialData });
       } else {
-        // Chế độ Create: Thiết lập giá trị mặc định cho DTO
         setFormData({
           roomType: "",
           pricePerHour: "",
           pricePerDay: "",
-          quantity: 1, // Mặc định số lượng là 1
+          quantity: 1,
         });
       }
     }
@@ -35,7 +33,6 @@ const RoomFormModal = ({
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
-    // Chuyển đổi giá trị thành số nếu là input type="number"
     const newValue = type === "number" && value !== "" ? Number(value) : value;
 
     setFormData((prevData) => ({
@@ -43,7 +40,6 @@ const RoomFormModal = ({
       [name]: newValue,
     }));
 
-    // Xóa lỗi khi người dùng nhập lại
     if (errors[name]) {
       setErrors((prevErrors) => ({
         ...prevErrors,
@@ -52,7 +48,6 @@ const RoomFormModal = ({
     }
   };
 
-  // Hàm Validation (Giống yêu cầu từ server)
   const validate = () => {
     let currentErrors = {};
 
@@ -68,14 +63,12 @@ const RoomFormModal = ({
       currentErrors.pricePerDay = "Giá theo ngày phải lớn hơn 0.";
     }
 
-    // Chỉ kiểm tra quantity khi ở chế độ thêm mới (Create)
     if (!isEditing) {
       if (!formData.quantity || Number(formData.quantity) < 1) {
         currentErrors.quantity = "Số lượng phòng phải ít nhất là 1.";
       }
     }
 
-    // Nếu ở chế độ chỉnh sửa, cần roomName
     if (isEditing && !formData.roomName) {
       currentErrors.roomName = "Tên phòng không được để trống.";
     }
@@ -88,7 +81,6 @@ const RoomFormModal = ({
     e.preventDefault();
     if (validate()) {
       if (isEditing) {
-        // Đảm bảo các giá trị số là kiểu Number
         const dataToUpdate = {
           roomStatus: formData.status,
           pricePerHour: Number(formData.pricePerHour),
@@ -96,7 +88,6 @@ const RoomFormModal = ({
         };
         onUpdate(dataToUpdate, formData.roomId);
       } else {
-        // Dữ liệu tạo mới (CreateRoomDto)
         const dataToCreate = {
           roomType: formData.roomType,
           pricePerHour: Number(formData.pricePerHour),
