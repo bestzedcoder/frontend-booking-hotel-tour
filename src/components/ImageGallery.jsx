@@ -21,7 +21,6 @@ const ImageGallery = ({ images = [] }) => {
 
   return (
     <div className="relative w-full max-w-4xl mx-auto">
-      {/* Ảnh chính */}
       <div className="relative group">
         <img
           src={images[currentIndex]}
@@ -29,7 +28,6 @@ const ImageGallery = ({ images = [] }) => {
           className="w-full h-[480px] object-cover rounded-2xl shadow-lg transition-transform duration-300 group-hover:scale-[1.03]"
         />
 
-        {/* Nút điều hướng */}
         {images.length > 1 && (
           <>
             <button
@@ -48,7 +46,6 @@ const ImageGallery = ({ images = [] }) => {
         )}
       </div>
 
-      {/* Ảnh nhỏ bên dưới */}
       {images.length > 1 && (
         <div className="flex justify-center gap-3 mt-4">
           {images.map((img, i) => (

@@ -13,12 +13,11 @@ export const BookingProcessingPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [progress, setProgress] = useState(0);
 
-  // Hiệu ứng thanh tiến trình giả lập cho trạng thái PENDING
   useEffect(() => {
     if (status === "PENDING" && !isLoading) {
       const timer = setInterval(() => {
         setProgress((oldProgress) => {
-          if (oldProgress === 90) return 90; // Dừng ở 90% cho đến khi có kết quả thật
+          if (oldProgress === 90) return 90;
           return oldProgress + 5;
         });
       }, 1000);
@@ -62,7 +61,6 @@ export const BookingProcessingPage = () => {
     return () => stompClient.deactivate();
   }, [bookingCode, bookingType, navigate]);
 
-  // Cấu hình giao diện theo Type
   const isHotel = bookingType === "hotel";
   const themeColor = isHotel ? "indigo" : "teal";
   const icon = isHotel ? "🏨" : "🎒";
@@ -70,7 +68,6 @@ export const BookingProcessingPage = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
       <div className="max-w-lg w-full bg-white rounded-[2rem] shadow-2xl overflow-hidden relative">
-        {/* Progress Bar ở trên cùng */}
         {status === "PENDING" && (
           <div className="absolute top-0 left-0 w-full h-1.5 bg-gray-100">
             <div
@@ -80,7 +77,6 @@ export const BookingProcessingPage = () => {
           </div>
         )}
 
-        {/* Header Section */}
         <div
           className={`bg-${themeColor}-900 p-10 text-white text-center relative overflow-hidden`}
         >
@@ -96,7 +92,6 @@ export const BookingProcessingPage = () => {
         </div>
 
         <div className="p-8">
-          {/* --- TRẠNG THÁI: PENDING (ĐANG CHỜ) --- */}
           {status === "PENDING" && (
             <div className="space-y-8 animate-in fade-in duration-500">
               <div className="flex flex-col items-center">
@@ -119,7 +114,6 @@ export const BookingProcessingPage = () => {
                 </p>
               </div>
 
-              {/* Checklist UI */}
               <div className="grid grid-cols-1 gap-3">
                 <div className="flex items-center gap-3 bg-gray-50 p-4 rounded-2xl border border-gray-100">
                   <div className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs">
@@ -141,7 +135,6 @@ export const BookingProcessingPage = () => {
             </div>
           )}
 
-          {/* --- TRẠNG THÁI: CONFIRMED (THÀNH CÔNG) --- */}
           {status === "CONFIRMED" && (
             <div className="text-center py-4 animate-in zoom-in-95 duration-500">
               <div className="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-100">
@@ -168,13 +161,13 @@ export const BookingProcessingPage = () => {
               </p>
               <div className="mt-10 space-y-3">
                 <button
-                  onClick={() => navigate("/bookings")}
-                  className={`w-full bg-${themeColor}-600 hover:bg-${themeColor}-700 text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-[0.98]`}
+                  onClick={() => navigate("/client/bookings")}
+                  className={`w-full bg-${themeColor}-600 hover:bg-${themeColor}-700 text-slate-600 font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-[0.98]`}
                 >
                   Xem chi tiết lịch trình
                 </button>
                 <button
-                  onClick={() => navigate("/")}
+                  onClick={() => navigate("/client/dashboard")}
                   className="w-full bg-slate-100 text-slate-600 font-bold py-4 rounded-2xl hover:bg-slate-200 transition-colors"
                 >
                   Về trang chủ
@@ -183,7 +176,6 @@ export const BookingProcessingPage = () => {
             </div>
           )}
 
-          {/* --- TRẠNG THÁI: FAILED / ERROR (THẤT BẠI) --- */}
           {(status === "FAILED" || status === "ERROR") && (
             <div className="text-center py-4 animate-in slide-in-from-bottom-4 duration-500">
               <div className="w-24 h-24 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -208,7 +200,6 @@ export const BookingProcessingPage = () => {
           )}
         </div>
 
-        {/* Support Footer */}
         <div className="p-6 bg-slate-50 border-t border-slate-100 flex justify-center items-center gap-2">
           <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
           <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import AuthForm from "./common/AuthForm";
 
@@ -7,7 +7,6 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
   const { login } = useAuth();
   const handleSubmit = async (e) => {
@@ -19,7 +18,6 @@ export default function LoginPage() {
   };
 
   const handleLoginGoogle = async (e) => {
-    // setIsLoading(true);
     console.log("google");
     window.location.href =
       "http://localhost:8080/api/oauth2/authorization/google";
@@ -64,16 +62,28 @@ export default function LoginPage() {
       ]}
       footer={
         <>
+          <div className="flex justify-end w-full mt-1 mb-2">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-blue-600 hover:text-blue-800 hover:underline transition"
+            >
+              Forgot Password?
+            </Link>
+          </div>
+
           <div className="flex flex-col items-center gap-2 mt-2">
             <p>
               Don’t have an account?{" "}
-              <Link to="/register" className="text-blue-600 font-medium">
+              <Link
+                to="/register"
+                className="text-blue-600 font-medium hover:underline"
+              >
                 Sign Up
               </Link>
             </p>
             <Link
-              to="/"
-              className="text-gray-500 hover:text-blue-600 transition font-medium"
+              to="/client/dashboard"
+              className="text-gray-500 hover:text-blue-600 transition font-medium text-sm"
             >
               ← Back to Home
             </Link>

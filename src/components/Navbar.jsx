@@ -12,9 +12,8 @@ const Navbar = () => {
 
   return (
     <nav className="flex items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32 py-4 bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
-      {/* Logo */}
       <Link
-        to="/"
+        to="/client/dashboard"
         className="flex items-center gap-2 font-bold text-2xl text-indigo-600 tracking-wide hover:text-indigo-700 transition"
       >
         <img
@@ -25,10 +24,9 @@ const Navbar = () => {
         TravelMate
       </Link>
 
-      {/* Desktop Menu */}
       <div className="hidden md:flex items-center gap-8 text-gray-700 font-medium">
         <Link
-          to="/"
+          to="/client/dashboard"
           className={`flex items-center gap-1 ${
             isActive("/")
               ? "text-indigo-600 border-b-2 border-indigo-600"
@@ -41,7 +39,7 @@ const Navbar = () => {
         {user && (
           <>
             <Link
-              to="/hotels"
+              to="/client/hotels"
               className={`flex items-center gap-1 ${
                 isActive("/hotels")
                   ? "text-indigo-600 border-b-2 border-indigo-600"
@@ -52,7 +50,7 @@ const Navbar = () => {
             </Link>
 
             <Link
-              to="/tours"
+              to="/client/tours"
               className={`flex items-center gap-1 ${
                 isActive("/tours")
                   ? "text-indigo-600 border-b-2 border-indigo-600"
@@ -63,7 +61,7 @@ const Navbar = () => {
             </Link>
 
             <Link
-              to="/bookings"
+              to="/client/bookings"
               className={`flex items-center gap-1 ${
                 isActive("/bookings")
                   ? "text-indigo-600 border-b-2 border-indigo-600"
@@ -78,7 +76,7 @@ const Navbar = () => {
         {user ? (
           <div className="flex items-center gap-4">
             <Link
-              to="/profile"
+              to="/client/profile"
               className="hover:text-indigo-600 transition flex items-center gap-2"
             >
               <img
@@ -109,7 +107,6 @@ const Navbar = () => {
         )}
       </div>
 
-      {/* Mobile Menu Button */}
       <button
         onClick={() => setOpen(!open)}
         className="md:hidden focus:outline-none"
@@ -139,11 +136,10 @@ const Navbar = () => {
         </svg>
       </button>
 
-      {/* Mobile Dropdown */}
       {open && (
         <div className="absolute top-[70px] left-0 w-full bg-white shadow-md py-4 flex flex-col items-start gap-3 px-6 text-gray-700 font-medium md:hidden">
           <Link
-            to="/"
+            to="/client/dashboard"
             onClick={() => setOpen(false)}
             className={`flex items-center gap-2 ${
               isActive("/") ? "text-indigo-600 font-semibold" : ""
@@ -155,7 +151,7 @@ const Navbar = () => {
           {user && (
             <>
               <Link
-                to="/hotels"
+                to="/client/hotels"
                 onClick={() => setOpen(false)}
                 className={`flex items-center gap-2 ${
                   isActive("/hotels") ? "text-indigo-600 font-semibold" : ""
@@ -164,7 +160,7 @@ const Navbar = () => {
                 <FaHotel /> Khách sạn
               </Link>
               <Link
-                to="/tours"
+                to="/client/tours"
                 onClick={() => setOpen(false)}
                 className={`flex items-center gap-2 ${
                   isActive("/tours") ? "text-indigo-600 font-semibold" : ""
@@ -173,7 +169,7 @@ const Navbar = () => {
                 <FaSuitcase /> Tour du lịch
               </Link>
               <Link
-                to="/bookings"
+                to="/client/bookings"
                 onClick={() => setOpen(false)}
                 className={`flex items-center gap-2 ${
                   isActive("/bookings") ? "text-indigo-600 font-semibold" : ""

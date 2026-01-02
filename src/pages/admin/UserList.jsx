@@ -36,7 +36,7 @@ export default function UserList() {
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [confirmDelete, setConfirmDelete] = useState(null); // 👈 user đang chọn xoá
+  const [confirmDelete, setConfirmDelete] = useState(null);
   const { callApi } = useApi();
 
   const fetchUsers = useCallback(async () => {

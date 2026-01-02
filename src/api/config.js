@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const BACKEND_URL = "http://localhost:8080/api";
+
 const axiosClient = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: BACKEND_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -21,16 +23,14 @@ axiosClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-
     console.log({ error });
-
     // Nếu token hết hạn
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       const userId = JSON.parse(localStorage.getItem("user"))?.id;
       try {
         const res = await axios.post(
-          "http://localhost:8080/api/auth/refresh",
+          `${BACKEND_URL}/auth/refresh`,
           { userId },
           {
             withCredentials: true,

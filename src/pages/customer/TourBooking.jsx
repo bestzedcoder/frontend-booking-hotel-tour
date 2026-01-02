@@ -17,27 +17,22 @@ import {
 } from "lucide-react";
 import { useApi } from "../../hooks/useApi";
 
-// --- Hằng số dịch vụ ---
-const SERVICE_FEE_RATE = 0; // Đặt lại 5% cho mục đích tính toán hóa đơn
+const SERVICE_FEE_RATE = 0;
 
-// --- Component Chính: TourBookingPage ---
 const TourBookingPage = () => {
   const navigate = useNavigate();
-  const { id: tourId } = useParams(); // Lấy tourId từ URL: /booking/:tourId
+  const { id: tourId } = useParams();
 
-  // --- State Quản Lý Data & UI ---
   const [tour, setTour] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const { callApi } = useApi();
 
-  // --- State Quản Lý Đặt Tour ---
   const [people, setPeople] = useState(1);
   const [paymentMethod, setPaymentMethod] = useState("VNPay");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // --- Logic Fetch Data (API Call) ---
-  const fetchDetails = useCallback(async (id) => {
+  const fetchDetails = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     const response = await callApi("get", `tours/${tourId}/booking-info`);
@@ -53,16 +48,14 @@ const TourBookingPage = () => {
   }, []);
 
   useEffect(() => {
-    // Chỉ fetch khi có tourId
     if (tourId) {
-      fetchDetails(tourId);
+      fetchDetails();
     } else {
       setIsLoading(false);
       setError("Không tìm thấy ID Tour trong URL.");
     }
   }, [tourId, fetchDetails]);
 
-  // Hàm định dạng tiền tệ
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -70,7 +63,6 @@ const TourBookingPage = () => {
     }).format(amount);
   };
 
-  // --- Logic Tính Toán (useMemo) ---
   const totalPrice = useMemo(() => {
     if (!tour) {
       return { subtotal: 0, serviceFee: 0, total: 0 };
@@ -81,22 +73,17 @@ const TourBookingPage = () => {
     const total = subtotal + serviceFee;
 
     return { subtotal, serviceFee, total };
-  }, [people, tour]); // Đã thay đổi dependency từ tour.price sang tour
+  }, [people, tour]);
 
-  // --- Hàm Xử Lý Sự Kiện ---
   const handleBooking = useCallback(async () => {
-    if (!tour) return; // Bảo vệ khỏi lỗi nếu tour là null
+    if (!tour) return;
 
     setIsSubmitting(true);
-    // Dữ liệu gửi lên server
     const bookingData = {
       people,
       paymentMethod,
     };
 
-    console.log("Dữ liệu đặt tour:", bookingData);
-
-    // Giả lập gọi API Đặt Tour (độ trễ 2 giây)
     const response = await callApi(
       "post",
       `bookings/tour/${tourId}`,
@@ -122,7 +109,6 @@ const TourBookingPage = () => {
     setPeople((prev) => Math.max(1, prev + change));
   };
 
-  // --- Render khi Loading ---
   if (isLoading)
     return (
       <div className="flex justify-center items-center h-screen bg-gray-50">
@@ -133,7 +119,6 @@ const TourBookingPage = () => {
       </div>
     );
 
-  // --- Render khi Error hoặc Tour không tồn tại ---
   if (error || !tour)
     return (
       <div className="flex justify-center items-center h-screen bg-gray-50 p-8 text-center">
@@ -154,11 +139,9 @@ const TourBookingPage = () => {
       </div>
     );
 
-  // --- Render Nội dung Chính ---
   return (
     <div className="min-h-screen bg-gray-100 py-12">
       <div className="container mx-auto px-4">
-        {/* Header */}
         <div className="flex items-center mb-6">
           <button
             onClick={() => navigate(-1)}
@@ -191,11 +174,8 @@ const TourBookingPage = () => {
           </div>
         </div>
 
-        {/* --- Grid Layout: Cột Đặt Tour và Cột Bill --- */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Cột 1: Control (Số người & Thanh toán) */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Phần 1: Số lượng người tham gia */}
             <section className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-indigo-500">
               <h3 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
                 <Users size={24} className="mr-2 text-indigo-600" />
@@ -232,7 +212,6 @@ const TourBookingPage = () => {
               </p>
             </section>
 
-            {/* Phần 2: Phương thức thanh toán */}
             <section className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-500">
               <h3 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
                 <CreditCard size={24} className="mr-2 text-green-600" />
@@ -240,7 +219,6 @@ const TourBookingPage = () => {
               </h3>
 
               <div className="space-y-4">
-                {/* Option 1: VNPay (Khuyến nghị) */}
                 <PaymentOption
                   id="vnpay"
                   label="Thanh Toán Qua VNPay"
@@ -252,7 +230,6 @@ const TourBookingPage = () => {
                   disabled={isSubmitting}
                 />
 
-                {/* Option 2: Cash (Tại văn phòng) */}
                 <PaymentOption
                   id="cash"
                   label="Thanh Toán Bằng Tiền Mặt"
@@ -267,7 +244,6 @@ const TourBookingPage = () => {
             </section>
           </div>
 
-          {/* Cột 2: Bill Tóm Tắt */}
           <div className="lg:col-span-1">
             <section className="sticky top-12 bg-white p-6 rounded-xl shadow-2xl border border-red-200">
               <h3 className="text-2xl font-bold text-red-600 mb-4 border-b pb-2 flex items-center">
@@ -275,7 +251,6 @@ const TourBookingPage = () => {
                 Hóa Đơn Tóm Tắt
               </h3>
 
-              {/* Chi tiết Bill */}
               <div className="space-y-3 mb-6">
                 <BillRow
                   label="Giá Tour cơ bản (x Người)"
@@ -294,7 +269,6 @@ const TourBookingPage = () => {
                 />
               </div>
 
-              {/* Tổng tiền cuối cùng */}
               <div className="border-t pt-4">
                 <p className="flex justify-between items-center text-xl font-bold text-gray-900">
                   <span>TỔNG TIỀN THANH TOÁN:</span>
@@ -312,7 +286,6 @@ const TourBookingPage = () => {
                 </p>
               </div>
 
-              {/* Nút Đặt Tour */}
               <button
                 onClick={handleBooking}
                 disabled={isSubmitting}
@@ -338,7 +311,6 @@ const TourBookingPage = () => {
   );
 };
 
-// --- Component Phụ: BillRow (Chi tiết hóa đơn) ---
 const BillRow = ({
   label,
   value,
@@ -369,7 +341,6 @@ const BillRow = ({
   </div>
 );
 
-// --- Component Phụ: PaymentOption (Lựa chọn thanh toán) ---
 const PaymentOption = ({
   id,
   label,
@@ -397,7 +368,7 @@ const PaymentOption = ({
       checked={isChecked}
       onChange={onCheck}
       disabled={disabled}
-      className="hidden" // Ẩn radio button gốc
+      className="hidden"
     />
 
     <div

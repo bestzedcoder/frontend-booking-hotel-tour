@@ -6,36 +6,25 @@ import {
   format,
   isAfter,
   isBefore,
-  startOfDay, // Thêm startOfDay để so sánh ngày
-  endOfDay, // Thêm endOfDay
-} from "date-fns"; // Đã thêm isAfter, isBefore, startOfDay, endOfDay
+  startOfDay,
+} from "date-fns";
 import { useParams, useNavigate } from "react-router-dom";
 import { useApi } from "../../hooks/useApi";
 
-// Helper
 const parseDate = (str) => (str ? parseISO(str) : null);
 
-// Thêm helper để lấy ngày min/max
 const getMinMaxDates = (bookingType) => {
   const now = new Date();
   if (bookingType === "DAILY") {
-    // DAILY: Ngày checkIn không được quá 1 ngày so với ngày hiện tại
-    // Min: Hôm nay
-    // Max: Ngày mai (addDays(startOfToday, 1))
     const today = startOfDay(now);
     const maxDate = addDays(today, 1);
 
     return {
-      min: format(today, "yyyy-MM-dd"), // Hôm nay
-      max: format(maxDate, "yyyy-MM-dd"), // Ngày mai
+      min: format(today, "yyyy-MM-dd"),
+      max: format(maxDate, "yyyy-MM-dd"),
     };
   } else {
-    // HOURLY
-    // HOURLY: Giờ checkIn không được quá 1 ngày so với thời điểm hiện tại
-    // Min: Thời điểm hiện tại
-    // Max: Thời điểm hiện tại + 1 ngày (24 giờ)
     const maxDateTime = addHours(now, 24);
-
     return {
       min: format(now, "yyyy-MM-dd'T'HH:mm"),
       max: format(maxDateTime, "yyyy-MM-dd'T'HH:mm"),
@@ -44,7 +33,6 @@ const getMinMaxDates = (bookingType) => {
 };
 
 export const HotelBookingPage = () => {
-  // ... (các đoạn code không đổi) ...
   const navigate = useNavigate();
   const { hotelId, roomId } = useParams();
   const { callApi } = useApi();
@@ -54,16 +42,13 @@ export const HotelBookingPage = () => {
   const [error, setError] = useState(null);
 
   const [booking, setBooking] = useState({
-    bookingType: "DAILY", // DAILY | HOURLY
+    bookingType: "DAILY",
     paymentMethod: "CASH",
     checkIn: "",
     checkOut: "",
     duration: 1,
   });
 
-  // --------------------------
-  // Fetch API
-  // --------------------------
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -78,9 +63,6 @@ export const HotelBookingPage = () => {
     fetchData();
   }, [hotelId, roomId, callApi]);
 
-  // --------------------------
-  // Tự tính checkOut
-  // --------------------------
   useEffect(() => {
     if (!booking.checkIn) return;
 
@@ -360,7 +342,7 @@ export const HotelBookingPage = () => {
                 ${
                   !booking.checkIn || isSubmitting
                     ? "bg-gray-400 cursor-not-allowed"
-                    : "bg-red-600 hover:bg-red-700 active:bg-red-800 transform active:scale-98" // Thêm hiệu ứng
+                    : "bg-red-600 hover:bg-red-700 active:bg-red-800 transform active:scale-98"
                 }`}
             >
               {isSubmitting ? "Đang xử lý..." : "Đặt Phòng Ngay"}

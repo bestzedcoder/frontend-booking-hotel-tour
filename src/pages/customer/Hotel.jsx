@@ -5,11 +5,6 @@ import { STAR_RATINGS, VIETNAM_PROVINCES } from "../../utils/contain";
 import { useApi } from "../../hooks/useApi";
 import { Link } from "react-router-dom";
 
-// =================================================================
-// 0. DỮ LIỆU CUNG CẤP & HÀM HỖ TRỢ
-// =================================================================
-
-// Dữ liệu mock được nhân rộng để phục vụ Phân trang/Tìm kiếm
 const getStarIcon = (star) => {
   const starMap = {
     FIVE_STAR: 5,
@@ -25,10 +20,6 @@ const getStarIcon = (star) => {
 const StarRating = ({ star }) => (
   <div className="text-yellow-500 text-lg">{getStarIcon(star)}</div>
 );
-
-// =================================================================
-// 1. COMPONENT HỖ TRỢ PHÂN TRANG
-// =================================================================
 
 const Pagination = ({
   totalItems,
@@ -99,10 +90,6 @@ const Pagination = ({
   );
 };
 
-// =================================================================
-// 2. SEARCH & FILTER (Đã tích hợp state)
-// =================================================================
-
 const SearchAndFilter = ({ searchParams, onParamsChange, onSearch }) => {
   const handleStarChange = (starValue) => {
     const starElement = STAR_RATINGS.find(
@@ -119,7 +106,6 @@ const SearchAndFilter = ({ searchParams, onParamsChange, onSearch }) => {
     onParamsChange({ ...searchParams, name: e.target.value });
   };
 
-  // Tìm giá trị hạng sao hiện tại (0-5) để highlight nút
   const currentStarValue =
     STAR_RATINGS.find((r) => r.element === searchParams.star)?.value || 0;
 
@@ -132,7 +118,6 @@ const SearchAndFilter = ({ searchParams, onParamsChange, onSearch }) => {
       </h2>
 
       <div className="flex flex-col lg:flex-row gap-6 mb-8 relative">
-        {/* Thành phố */}
         <div className="flex-1">
           <label className="text-sm font-bold text-gray-600 uppercase block mb-2">
             Tỉnh/Thành
@@ -157,7 +142,6 @@ const SearchAndFilter = ({ searchParams, onParamsChange, onSearch }) => {
           </div>
         </div>
 
-        {/* Tên khách sạn */}
         <div className="flex-1">
           <label className="text-sm font-bold text-gray-600 uppercase block mb-2">
             Tên khách sạn
@@ -171,10 +155,9 @@ const SearchAndFilter = ({ searchParams, onParamsChange, onSearch }) => {
           />
         </div>
 
-        {/* Nút Tìm kiếm */}
         <div className="lg:self-end pt-0 lg:pt-8">
           <button
-            onClick={onSearch} // Kích hoạt tìm kiếm
+            onClick={onSearch}
             className="w-full lg:w-auto px-10 py-3.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-extrabold text-lg rounded-xl hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-[1.05] shadow-lg shadow-indigo-400/50 tracking-wider"
           >
             TÌM
@@ -182,7 +165,6 @@ const SearchAndFilter = ({ searchParams, onParamsChange, onSearch }) => {
         </div>
       </div>
 
-      {/* Filter hạng sao */}
       <div className="border-t border-gray-100 pt-5 mt-4 relative">
         <h4 className="text-sm font-bold text-gray-600 uppercase mb-3">
           Hạng Sao Phổ Biến:
@@ -208,13 +190,8 @@ const SearchAndFilter = ({ searchParams, onParamsChange, onSearch }) => {
   );
 };
 
-// =================================================================
-// 3. HOTEL CARD (ĐÃ CẬP NHẬT UI CÂN BẰNG CHIỀU CAO)
-// =================================================================
-
 const HotelCardPremium = ({ hotel }) => (
   <div className="flex flex-col md:flex-row bg-white rounded-2xl shadow-xl hover:shadow-3xl transition duration-500 ease-in-out border border-gray-100 transform hover:-translate-y-1">
-    {/* Ảnh (w-2/5) */}
     <div className="w-full md:w-2/5 relative h-72 md:h-96 overflow-hidden rounded-t-2xl md:rounded-l-2xl md:rounded-tr-none">
       <img
         src={hotel.imageUrl}
@@ -224,9 +201,7 @@ const HotelCardPremium = ({ hotel }) => (
       <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
     </div>
 
-    {/* Nội dung (w-3/5) */}
     <div className="w-full md:w-3/5 p-8 flex flex-col justify-between">
-      {/* Nội dung chính */}
       <div className="flex-grow pr-4">
         <h3 className="text-3xl font-black text-gray-900 mb-2 hover:text-indigo-700 transition cursor-pointer">
           {hotel.hotelName}
@@ -267,10 +242,9 @@ const HotelCardPremium = ({ hotel }) => (
         </div>
       </div>
 
-      {/* Nút xem chi tiết */}
       <div className="flex flex-col justify-end items-end pl-4 flex-shrink-0 mt-6">
         <Link
-          to={`/hotels/${hotel.hotelId}/details`}
+          to={`/client/hotels/${hotel.hotelId}/details`}
           className="px-8 py-3.5 bg-gradient-to-r from-rose-500 to-red-600 text-white font-extrabold rounded-xl shadow-md hover:shadow-lg hover:from-rose-600 hover:to-red-700 transition duration-300 transform hover:scale-[1.05] text-lg tracking-wide text-center"
         >
           XEM CHI TIẾT
@@ -283,16 +257,11 @@ const HotelCardPremium = ({ hotel }) => (
   </div>
 );
 
-// =================================================================
-// 4. TRANG CHÍNH (LOGIC TÌM KIẾM VÀ API MOCK)
-// =================================================================
-
-const ITEMS_PER_PAGE = 6; // Số lượng khách sạn mỗi trang
+const ITEMS_PER_PAGE = 5;
 
 const HotelSearchPage = () => {
-  // 1. Quản lý trạng thái tìm kiếm
   const [searchParams, setSearchParams] = useState({
-    city: "", // "Tất cả Tỉnh/Thành"
+    city: "",
     name: "",
     star: null,
   });
@@ -303,7 +272,6 @@ const HotelSearchPage = () => {
 
   const { callApi } = useApi();
 
-  // 2. Hàm mô phỏng gọi API (Tìm kiếm và Phân trang)
   const fetchHotels = async (params, page) => {
     setIsLoading(true);
     console.log({ params });
@@ -333,28 +301,21 @@ const HotelSearchPage = () => {
     setIsLoading(false);
   };
 
-  // 3. Side effect: Tự động chạy tìm kiếm lần đầu khi component mount
   useEffect(() => {
     fetchHotels(searchParams, currentPage);
-  }, []); // Chỉ chạy 1 lần khi mount
+  }, []);
 
-  // 4. Hàm xử lý khi ấn nút TÌM
   const handleSearch = () => {
-    // Luôn reset về trang 1 khi thực hiện tìm kiếm mới
     setCurrentPage(1);
     fetchHotels(searchParams, 1);
   };
 
-  // 5. Hàm xử lý khi thay đổi trang
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
-    // Gọi API với searchParams cũ và trang mới
     fetchHotels(searchParams, newPage);
-    // Cuộn lên đầu trang (tùy chọn)
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // 6. Hàm xử lý thay đổi params (chỉ cập nhật state, chưa tìm kiếm)
   const handleParamsChange = (newParams) => {
     setSearchParams(newParams);
   };
@@ -362,7 +323,6 @@ const HotelSearchPage = () => {
   return (
     <div className="min-h-screen bg-gray-100">
       <main className="container mx-auto px-4 md:px-8 py-12">
-        {/* Thanh tìm kiếm và bộ lọc */}
         <SearchAndFilter
           searchParams={searchParams}
           onParamsChange={handleParamsChange}
@@ -374,7 +334,6 @@ const HotelSearchPage = () => {
             Khám Phá Khách Sạn ({totalResults})
           </p>
 
-          {/* Hiển thị Loading */}
           {isLoading && (
             <div className="text-center py-10 bg-white rounded-xl shadow-md">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
@@ -384,7 +343,6 @@ const HotelSearchPage = () => {
             </div>
           )}
 
-          {/* Hiển thị Kết quả */}
           {!isLoading && searchResults.length > 0 && (
             <div className="space-y-8">
               {searchResults.map((hotel) => (
@@ -393,7 +351,6 @@ const HotelSearchPage = () => {
             </div>
           )}
 
-          {/* Trường hợp không có kết quả */}
           {!isLoading && searchResults.length === 0 && (
             <div className="text-center py-10 bg-white rounded-xl shadow-md border-l-4 border-red-500">
               <p className="text-xl font-bold text-red-700 mb-2">
@@ -405,7 +362,6 @@ const HotelSearchPage = () => {
             </div>
           )}
 
-          {/* Phân trang */}
           <Pagination
             totalItems={totalResults}
             itemsPerPage={ITEMS_PER_PAGE}

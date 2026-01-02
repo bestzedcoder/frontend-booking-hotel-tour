@@ -10,7 +10,6 @@ import {
   Zap,
 } from "lucide-react";
 
-// Dữ liệu mô phỏng (Mock Data)
 const featuredDestinations = [
   {
     name: "Vịnh Hạ Long",
@@ -122,9 +121,7 @@ const StatCard = ({ stat }) => (
 export const HomePage = () => {
   return (
     <div className="min-h-screen bg-gray-50 font-sans p-4 md:p-8">
-      {/* Container Chính */}
       <div className="max-w-7xl mx-auto space-y-12">
-        {/* 1. Khu Vực Header & Chào Mừng */}
         <header className="relative overflow-hidden bg-white p-8 md:p-12 rounded-3xl shadow-2xl bg-gradient-to-br from-indigo-500 to-purple-600">
           <div className="absolute inset-0 opacity-10 bg-[url('https://placehold.co/1000x500/ffffff/ffffff?text=TRAVEL')] bg-cover bg-center mix-blend-multiply"></div>
 
@@ -146,7 +143,6 @@ export const HomePage = () => {
               tour du lịch của bạn.
             </p>
 
-            {/* Thanh Tìm Kiếm Giả */}
             <div className="mt-8 flex flex-col sm:flex-row gap-4">
               <input
                 type="text"
@@ -162,7 +158,6 @@ export const HomePage = () => {
           </div>
         </header>
 
-        {/* 2. Khu Vực Số Liệu Nổi Bật */}
         <section>
           <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
             <TrendingUp className="w-6 h-6 mr-3 text-indigo-500" />
@@ -175,7 +170,6 @@ export const HomePage = () => {
           </div>
         </section>
 
-        {/* 3. Khu Vực Điểm Đến Nổi Bật */}
         <section>
           <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center">
             <MapPin className="w-6 h-6 mr-3 text-pink-500" />
@@ -188,7 +182,6 @@ export const HomePage = () => {
           </div>
         </section>
 
-        {/* 4. Khu Vực Giới Thiệu Dự Án & Tác Giả */}
         <section className="pt-8">
           <div className="bg-gradient-to-r from-teal-500 to-cyan-600 p-8 md:p-10 rounded-3xl shadow-xl border-4 border-white/50 text-white flex flex-col md:flex-row items-center justify-between">
             <div className="flex items-center mb-6 md:mb-0">

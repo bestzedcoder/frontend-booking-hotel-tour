@@ -10,83 +10,14 @@ import {
   CheckCircle,
   BookOpen,
   Send,
-  Star,
   Sunrise,
   Compass,
-  Phone, // Icon mới cho Owner
-  User, // Icon mới cho Owner
-  MessageSquare, // Icon mới cho Owner
+  Phone,
+  User,
+  MessageSquare,
 } from "lucide-react";
 import { useApi } from "../../hooks/useApi";
-// import { useApi } from "../../hooks/useApi"; // Uncomment khi dùng API thật
 
-// --- Cấu trúc dữ liệu giả lập (Mock Data Structure) ---
-const mockTourData = {
-  tourId: 1,
-  tourName: "Khám phá Vịnh Hạ Long & Tuần Châu 4 Ngày 3 Đêm",
-  tourDescription:
-    "Trải nghiệm du thuyền sang trọng trên Vịnh Hạ Long, thăm quan các hang động kỳ vĩ, và tận hưởng không khí sôi động tại đảo Tuần Châu. Một hành trình kết hợp giữa thiên nhiên hùng vĩ và tiện nghi đẳng cấp.",
-  tourCity: "Hạ Long, Quảng Ninh",
-  tourPrice: 7500000.0,
-  startDate: "2025-03-15",
-  endDate: "2025-03-18",
-  duration: 4,
-  maxPeople: 25,
-  imageTourUrls: [
-    "https://images.unsplash.com/photo-1579269412586-77881c6204c3?auto=format&fit=crop&w=1000&q=80",
-    "https://images.unsplash.com/photo-1541315181757-759021873138?auto=format&fit=crop&w=1000&q=80",
-    "https://images.unsplash.com/photo-1570535316315-b778d91c28c8?auto=format&fit=crop&w=1000&q=80",
-    "https://images.unsplash.com/photo-1571253013840-0259b3780360?auto=format&fit=crop&w=1000&q=80",
-  ],
-  tourSchedules: [
-    {
-      tourScheduleId: 1,
-      title: "Khởi hành & Du thuyền Vịnh Hạ Long",
-      description:
-        "Khởi hành từ Hà Nội. Lên du thuyền 5 sao, nhận phòng. Ăn trưa và bắt đầu hành trình khám phá vịnh, tham quan Hang Sửng Sốt. Ăn tối trên du thuyền và tham gia câu mực đêm.",
-    },
-    {
-      tourScheduleId: 2,
-      title: "Đảo Ti Tốp - Kayak & Tắm biển",
-      description:
-        "Bắt đầu ngày mới bằng bài tập Thái Cực Quyền. Thăm Đảo Ti Tốp, tắm biển và leo núi ngắm toàn cảnh Vịnh. Tham gia chèo thuyền Kayak tại khu vực Làng Chài.",
-    },
-    {
-      tourScheduleId: 3,
-      title: "Hang Luồn, Vịnh Bái Tử Long & Tuần Châu",
-      description:
-        "Tham quan Hang Luồn bằng thuyền nan. Chuyển sang khám phá Vịnh Bái Tử Long. Trở về đất liền và nhận phòng khách sạn tại Tuần Châu. Buổi tối tự do khám phá khu vui chơi Tuần Châu.",
-    },
-    {
-      tourScheduleId: 4,
-      title: "Tuần Châu & Kết thúc hành trình",
-      description:
-        "Ăn sáng tại khách sạn. Tự do mua sắm đặc sản hoặc nghỉ ngơi. Khởi hành về Hà Nội. Kết thúc chuyến đi.",
-    },
-  ],
-  // --- THÊM DỮ LIỆU OWNER ---
-  owner: {
-    phoneNumber: "0987654321",
-    fullName: "Nguyễn Văn A",
-    avatarUrl:
-      "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?fit=crop&w=100&h=100&q=80", // Ảnh đại diện giả lập
-  },
-};
-
-// --- Hàm giả lập gọi API chi tiết Tour ---
-const mockFetchTourDetails = (tourId) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      if (tourId == 1) {
-        resolve({ success: true, data: mockTourData });
-      } else {
-        resolve({ success: false, message: "Không tìm thấy Tour này." });
-      }
-    }, 1000);
-  });
-};
-
-// --- Component Chính: TourDetails ---
 const TourDetails = () => {
   const { id: tourId } = useParams();
   const navigate = useNavigate();
@@ -96,7 +27,6 @@ const TourDetails = () => {
   const [error, setError] = useState(null);
   const { callApi } = useApi();
 
-  // Hàm định dạng tiền tệ
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -104,7 +34,6 @@ const TourDetails = () => {
     }).format(amount);
   };
 
-  // Hàm fetch data
   const fetchDetails = useCallback(async (id) => {
     setIsLoading(true);
     setError(null);
@@ -127,9 +56,6 @@ const TourDetails = () => {
     fetchDetails(tourId);
   }, [tourId, fetchDetails]);
 
-  // --- Render Functions ---
-
-  // 1. Loading State
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gray-50">
@@ -141,7 +67,6 @@ const TourDetails = () => {
     );
   }
 
-  // 2. Error State
   if (error || !tour) {
     return (
       <div className="container mx-auto p-8 text-center min-h-screen bg-white shadow-lg rounded-xl mt-10">
@@ -161,10 +86,8 @@ const TourDetails = () => {
     );
   }
 
-  // 3. Main Content
   return (
     <div className="min-h-screen bg-gray-50 pb-16">
-      {/* Header và Nút Back */}
       <div className="bg-white shadow-sm sticky top-0 z-10 border-b">
         <div className="container mx-auto px-4 py-3 flex justify-between items-center">
           <button
@@ -178,19 +101,16 @@ const TourDetails = () => {
       </div>
 
       <div className="container mx-auto px-4 mt-8">
-        {/* --- Phần Chính: Tên & Hình ảnh & Tóm Tắt --- */}
         <div className="bg-white rounded-xl shadow-2xl p-6 mb-8 border-t-4 border-indigo-600">
           <h2 className="text-4xl font-extrabold text-gray-900 mb-4">
             {tour.tourName}
           </h2>
 
-          {/* Carousel Ảnh Tự Động */}
           <AutoImageCarousel
             images={tour.imageTourUrls}
             tourName={tour.tourName}
           />
 
-          {/* Tóm tắt nhanh */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center border-y py-4 my-4">
             <InfoBox
               Icon={MapPin}
@@ -219,9 +139,7 @@ const TourDetails = () => {
           </div>
         </div>
 
-        {/* --- Mô tả & Lịch trình (Grid Layout) --- */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Cột 1: Mô tả Tour & Lịch Trình */}
           <div className="lg:col-span-2 space-y-8">
             <div className="bg-white p-6 rounded-xl shadow-lg">
               <h3 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2 flex items-center">
@@ -233,7 +151,6 @@ const TourDetails = () => {
               </p>
             </div>
 
-            {/* Lịch Trình Chi Tiết (Timeline) */}
             <div className="bg-white p-6 rounded-xl shadow-lg">
               <h3 className="text-3xl font-extrabold text-gray-800 mb-8 border-b pb-2 flex items-center">
                 <Calendar size={28} className="mr-3 text-red-600" />
@@ -243,12 +160,9 @@ const TourDetails = () => {
             </div>
           </div>
 
-          {/* Cột 2: Thanh thông tin cố định (Booking/Pricing & Owner Info) */}
           <div className="lg:col-span-1 space-y-8">
-            {/* Owner Info Box (Vị trí mới) */}
             {tour.owner && <OwnerInfoBox owner={tour.owner} />}
 
-            {/* Pricing/Booking Box */}
             <div className="sticky top-20 bg-indigo-50 p-6 rounded-xl shadow-xl border border-indigo-200">
               <h3 className="text-xl font-bold text-indigo-800 mb-4 border-b pb-2">
                 Thông tin Đặt Tour
@@ -306,7 +220,6 @@ const TourDetails = () => {
   );
 };
 
-// --- Component MỚI: OwnerInfoBox (Thông tin Người Quản Lý) ---
 const OwnerInfoBox = ({ owner }) => (
   <div className="bg-white p-6 rounded-xl shadow-xl border-l-4 border-green-500">
     <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center border-b pb-2">
@@ -348,7 +261,6 @@ const OwnerInfoBox = ({ owner }) => (
   </div>
 );
 
-// --- Component MỚI: AutoImageCarousel (Giữ nguyên) ---
 const AutoImageCarousel = ({ images, tourName, intervalTime = 5000 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
@@ -400,7 +312,6 @@ const AutoImageCarousel = ({ images, tourName, intervalTime = 5000 }) => {
   );
 };
 
-// --- Component Phụ: Info Box (Giữ nguyên) ---
 const InfoBox = ({ Icon, label, value, color }) => (
   <div className="flex flex-col items-center">
     <Icon size={28} className={color} />
@@ -409,7 +320,6 @@ const InfoBox = ({ Icon, label, value, color }) => (
   </div>
 );
 
-// --- Component Phụ: Timeline Item (Giữ nguyên) ---
 const TimelineItem = ({ day, title, description, Icon, isLast }) => {
   const boxColor =
     day % 2 === 1
@@ -448,7 +358,6 @@ const TimelineItem = ({ day, title, description, Icon, isLast }) => {
   );
 };
 
-// --- Component Phụ: Danh sách Lịch trình (Giữ nguyên) ---
 const TourScheduleList = ({ schedules }) => {
   const iconSequence = [Send, Sunrise, Compass, MapPin];
 

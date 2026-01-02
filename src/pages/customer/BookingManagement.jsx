@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { format } from "date-fns";
 import { useApi } from "../../hooks/useApi";
 
@@ -344,10 +344,9 @@ const BookingDetailsModal = ({ booking, onClose, callApi }) => {
         </div>
 
         <div className="p-6 border-t bg-gray-50 rounded-b-xl flex flex-col space-y-3">
-          {/* Nút Thanh toán/Hành động */}
           <button
             onClick={handleAction}
-            disabled={paymentActionDisabled} // Dùng biến đã chỉnh sửa
+            disabled={paymentActionDisabled}
             className={`w-full py-3 text-white font-semibold rounded-lg transition duration-200 flex justify-center items-center ${
               isPaying ? "bg-green-700 cursor-wait" : actionButtonClasses
             } ${
@@ -385,19 +384,12 @@ const BookingDetailsModal = ({ booking, onClose, callApi }) => {
             )}
           </button>
 
-          {/* Nút Xuất Hóa Đơn */}
           <button
             onClick={handleExportInvoice}
-            disabled={exportActionDisabled} // 💡 Dùng biến exportActionDisabled mới (chỉ bị cấm khi loading)
+            disabled={exportActionDisabled}
             className={`w-full py-3 text-indigo-600 font-semibold border border-indigo-600 rounded-lg bg-white hover:bg-indigo-50 transition duration-200 flex justify-center items-center ${
-              exportActionDisabled
-                ? "opacity-60 cursor-not-allowed" // Vô hiệu hóa khi loading
-                : ""
-            } ${
-              isExporting
-                ? "opacity-70 cursor-wait" // Thêm hiệu ứng đang chờ khi đang xuất
-                : ""
-            }`}
+              exportActionDisabled ? "opacity-60 cursor-not-allowed" : ""
+            } ${isExporting ? "opacity-70 cursor-wait" : ""}`}
           >
             {isExporting ? (
               <>
@@ -533,9 +525,7 @@ export const BookingManagementPage = () => {
         📦 Quản Lý Đơn Hàng Của Tôi
       </h1>
 
-      {/* --- Bộ Lọc và Tìm Kiếm --- */}
       <div className="flex flex-col md:flex-row gap-4 mb-6 p-4 bg-white rounded-xl shadow-lg border border-gray-100">
-        {/* Bộ Lọc Mã Đơn */}
         <div className="flex-1">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Tìm theo Mã Đơn
@@ -549,7 +539,6 @@ export const BookingManagementPage = () => {
           />
         </div>
 
-        {/* BỘ LỌC THEO LOẠI ĐƠN HÀNG */}
         <div className="md:w-48">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Lọc theo Loại
@@ -565,7 +554,6 @@ export const BookingManagementPage = () => {
           </select>
         </div>
 
-        {/* Bộ Lọc theo Trạng Thái */}
         <div className="md:w-48">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Lọc theo Trạng Thái
@@ -586,7 +574,6 @@ export const BookingManagementPage = () => {
         </div>
       </div>
 
-      {/* --- Header Bảng (Thêm cột) --- */}
       <div className="hidden lg:grid grid-cols-12 p-4 bg-indigo-100/70 text-indigo-800 font-bold rounded-t-xl text-sm border-b border-indigo-200">
         <div className="col-span-3">Mã Đơn & Chi tiết</div>
         <div className="col-span-2 flex justify-center">Trạng thái & Giá</div>
@@ -595,7 +582,6 @@ export const BookingManagementPage = () => {
         <div className="col-span-1 flex justify-end">Actions</div>
       </div>
 
-      {/* --- Bảng Đơn Hàng --- */}
       <div className="bg-white shadow-2xl rounded-xl overflow-hidden">
         {currentBookings.length === 0 ? (
           <div className="p-10 text-center text-gray-500 text-lg">
@@ -607,14 +593,13 @@ export const BookingManagementPage = () => {
               <BookingItem
                 key={booking.bookingId}
                 booking={booking}
-                onOpenModal={openDetailsModal} // Truyền handler mở modal
+                onOpenModal={openDetailsModal}
               />
             ))}
           </div>
         )}
       </div>
 
-      {/* --- Phân Trang (Pagination) --- */}
       {totalPages > 1 && (
         <Pagination
           currentPage={currentPage}
@@ -623,7 +608,6 @@ export const BookingManagementPage = () => {
         />
       )}
 
-      {/* --- Modal Chi Tiết Hóa Đơn --- */}
       <BookingDetailsModal
         booking={selectedBooking}
         onClose={closeDetailsModal}

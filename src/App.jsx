@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { ProtectedRoute } from "./layouts/ProtectedLayout";
 import NotFoundPage from "./pages/NotFound";
 import { ForbiddenPage } from "./pages/Forbidden";
@@ -40,6 +40,8 @@ function App() {
   return (
     <>
       <Routes>
+        <Route path="/" element={<Navigate to="/client/dashboard" replace />} />
+
         <Route
           path="/login"
           element={
@@ -74,8 +76,8 @@ function App() {
           }
         />
 
-        <Route path="/*" element={<CustomerLayout />}>
-          <Route index element={<HomePage />} />
+        <Route path="/client/*" element={<CustomerLayout />}>
+          <Route path="dashboard" element={<HomePage />} />
           <Route path="hotels" element={<HotelSearchPage />} />
           <Route path="hotels/:id/details" element={<HotelDetailsPage />} />
           <Route
@@ -102,7 +104,8 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<AdminDashboard />} />
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
           <Route path="users" element={<UserList />} />
           <Route path="users/:id/edit" element={<EditUserPage />} />
           <Route path="hotels" element={<HotelManagement />} />
@@ -120,7 +123,8 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<BusinessDashboard />} />
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<BusinessDashboard />} />
           <Route path="my-hotels" element={<HotelManagementPage />} />
           <Route
             path="my-hotels/:id/details"
@@ -136,6 +140,7 @@ function App() {
           <Route path="*" element={<NotFoundPage />} />
         </Route>
 
+        <Route path="*" element={<NotFoundPage />} />
         <Route path="/forbidden" element={<ForbiddenPage />} />
       </Routes>
     </>

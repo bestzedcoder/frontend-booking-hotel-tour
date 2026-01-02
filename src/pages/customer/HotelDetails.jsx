@@ -3,10 +3,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useApi } from "../../hooks/useApi";
 import { RoomStatus, RoomType } from "../../utils/contain";
 
-// =================================================================
-// 0. DỮ LIỆU HỖ TRỢ (GIỮ NGUYÊN)
-// =================================================================
-
 const getStarIcon = (star) => {
   const starMap = {
     FIVE_STAR: 5,
@@ -43,10 +39,6 @@ const getRoomTypeLabel = (type) => {
       return "Khác";
   }
 };
-
-// =================================================================
-// 1. IMAGE SLIDER LUXURY (GIỮ NGUYÊN)
-// =================================================================
 
 const ImageSlider = ({
   images,
@@ -158,10 +150,6 @@ const ImageSlider = ({
   );
 };
 
-// =================================================================
-// 2. ROOM CARD + EMPTY STATE (CHỈNH SỬA OwnerContactCard)
-// =================================================================
-
 const RoomCardAvailable = ({ room, handleClick }) => (
   <div className="flex bg-white rounded-2xl shadow-xl border-t-4 border-indigo-400 p-6 items-center hover:shadow-2xl hover:border-red-500 transition duration-300">
     <div className="flex-grow pr-6">
@@ -207,7 +195,7 @@ const EmptyState = ({ selectedRoomType }) => {
   const message = selectedRoomType
     ? `Hiện tại không có phòng loại ${getRoomTypeLabel(
         selectedRoomType
-      )} nào trống. Vui lòng chọn loại phòng khác.` // Đã bỏ **
+      )} nào trống. Vui lòng chọn loại phòng khác.`
     : "Rất tiếc! Tất cả các phòng trong khách sạn này hiện tại đều đã được đặt.";
 
   return (
@@ -236,7 +224,6 @@ const EmptyState = ({ selectedRoomType }) => {
   );
 };
 
-// Component liên hệ quản lý ĐÃ CHỈNH SỬA UI
 const OwnerContactCard = ({ owner }) => (
   <div className="p-5 bg-indigo-100 rounded-xl shadow-xl border-t-4 border-indigo-600">
     <div className="flex items-center mb-3 border-b pb-2 border-indigo-300">
@@ -250,7 +237,7 @@ const OwnerContactCard = ({ owner }) => (
     </p>
     <div className="flex items-center text-gray-700 mt-2">
       <svg
-        className="w-5 h-5 mr-2 text-indigo-600" // Icon màu indigo nổi bật
+        className="w-5 h-5 mr-2 text-indigo-600"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -264,17 +251,13 @@ const OwnerContactCard = ({ owner }) => (
       </svg>
       <a
         href={`tel:${owner.phoneNumber}`}
-        className="text-xl font-extrabold text-red-600 hover:text-indigo-700 transition underline" // Màu đỏ nổi bật cho CTA
+        className="text-xl font-extrabold text-red-600 hover:text-indigo-700 transition underline"
       >
         {owner.phoneNumber}
       </a>
     </div>
   </div>
 );
-
-// =================================================================
-// 3. FILTER + PAGINATION (GIỮ NGUYÊN)
-// =================================================================
 
 const RoomTypeFilter = ({ selectedType, onSelect }) => (
   <div className="flex flex-wrap gap-3 mb-6 items-center">
@@ -367,10 +350,6 @@ const Pagination = ({
   );
 };
 
-// =================================================================
-// 4. HOTEL DETAILS PAGE (CHỈNH SỬA UI)
-// =================================================================
-
 const ROOMS_PER_PAGE = 5;
 
 const HotelDetailsPage = () => {
@@ -385,15 +364,10 @@ const HotelDetailsPage = () => {
 
   useEffect(() => {
     const fetchHotelDetails = async () => {
-      try {
-        setIsLoading(true);
-        const res = await callApi("get", `/hotels/${hotelId}/details`);
-        if (res?.success) setHotelData(res.data);
-      } catch (err) {
-        console.error("Lỗi khi gọi API:", err);
-      } finally {
-        setIsLoading(false);
-      }
+      setIsLoading(true);
+      const res = await callApi("get", `/hotels/${hotelId}/details`);
+      if (res?.success) setHotelData(res.data);
+      setIsLoading(false);
     };
     fetchHotelDetails();
   }, [hotelId, callApi]);
@@ -421,8 +395,6 @@ const HotelDetailsPage = () => {
     setCurrentPage(1);
   }, [selectedRoomType]);
 
-  // Render States (Loading/404) được giữ nguyên...
-
   if (isLoading)
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -448,10 +420,8 @@ const HotelDetailsPage = () => {
       </div>
     );
 
-  // ----------------- MAIN RENDER -----------------
-
   const handleBooking = (roomId) => {
-    navigate(`/hotels/${hotelId}/room/${roomId}/booking`);
+    navigate(`/client/hotels/${hotelId}/room/${roomId}/booking`);
   };
 
   return (
@@ -465,7 +435,6 @@ const HotelDetailsPage = () => {
       />
       <main className="container mx-auto px-4 md:px-8 py-10">
         <div className="grid grid-cols-12 gap-8">
-          {/* Cột Trái: Thông tin Khách sạn & Liên hệ - UI ĐÃ CHỈNH SỬA */}
           <div className="col-span-12 lg:col-span-4">
             <div className="bg-white p-6 rounded-2xl shadow-2xl sticky top-4 space-y-5">
               <h3 className="text-2xl font-extrabold mb-3 border-b-2 pb-2 text-gray-900 border-indigo-400">
@@ -473,8 +442,6 @@ const HotelDetailsPage = () => {
                 Sạn
               </h3>
 
-              {/* Mô tả */}
-              {/* Mô tả */}
               <blockquote
                 className="text-base text-gray-700 italic border-l-4 border-indigo-600 pl-4 py-1 bg-indigo-50 rounded-r-lg 
                      truncate"
@@ -482,7 +449,6 @@ const HotelDetailsPage = () => {
                 {hotelData.hotelDescription}
               </blockquote>
 
-              {/* Chi tiết */}
               <div className="space-y-3 pt-2 border-b pb-4">
                 <p className="flex items-center text-base">
                   <span className="font-semibold text-gray-700 w-24">
@@ -510,12 +476,10 @@ const HotelDetailsPage = () => {
                 </p>
               </div>
 
-              {/* Thẻ liên hệ quản lý - UI ĐÃ CHỈNH SỬA */}
               {hotelData.owner && <OwnerContactCard owner={hotelData.owner} />}
             </div>
           </div>
 
-          {/* Cột Phải: Danh sách phòng & Lọc/Phân trang (GIỮ NGUYÊN) */}
           <div className="col-span-12 lg:col-span-8">
             <h3 className="text-3xl font-extrabold text-gray-900 mb-6 pb-2 border-b-2 border-red-500">
               Danh Sách Phòng Trống ({filtered.length})

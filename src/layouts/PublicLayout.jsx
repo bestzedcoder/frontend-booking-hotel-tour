@@ -5,9 +5,8 @@ import { useAuth } from "../hooks/useAuth";
 const PublicHeader = () => (
   <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-100">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
-      {/* Logo và Tên Ứng Dụng */}
       <a
-        href="/"
+        href="/client/dashboard"
         className="flex items-center space-x-2 text-2xl font-bold text-indigo-600"
       >
         <Plane className="w-6 h-6 transform rotate-45 text-cyan-500" />
@@ -41,21 +40,29 @@ export function PublicLayout({ children }) {
   const { user } = useAuth();
 
   if (user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/client/dashboard" replace />;
   }
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 font-sans">
-      {/* 1. Header */}
       <PublicHeader />
 
-      {/* 2. Main Content (Nơi chứa Login/Register Forms) */}
-      <main className="flex-grow pt-24 pb-12 w-full">
-        <div className="absolute inset-0 z-0 opacity-20 bg-gradient-to-br from-indigo-50 to-blue-50"></div>
-        <div className="relative z-10 max-w-lg mx-auto px-4">{children}</div>
+      <main className="flex-grow w-full flex items-center justify-center pt-24 pb-12">
+        <div className="absolute inset-0 z-0 opacity-40 bg-gradient-to-tr from-indigo-50 via-emerald-50 to-white"></div>
+
+        <div className="relative z-10 w-full max-w-md mx-auto px-4 md:px-0">
+          <div className="bg-white p-8 md:p-10 rounded-2xl shadow-2xl border border-gray-100/50 transform transition duration-500 hover:shadow-3xl">
+            <h1 className="sr-only">Đăng nhập hoặc Đăng ký</h1>
+
+            {children}
+          </div>
+
+          <p className="text-center text-sm font-medium text-emerald-600 mt-6">
+            Đăng nhập để nhận các ưu đãi độc quyền hôm nay!
+          </p>
+        </div>
       </main>
 
-      {/* 3. Footer */}
       <PublicFooter />
     </div>
   );

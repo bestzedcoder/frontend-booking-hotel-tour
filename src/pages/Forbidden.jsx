@@ -27,7 +27,7 @@ export const ForbiddenPage = () => {
             ← Quay lại
           </button>
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/client/dashboard")}
             className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition"
           >
             Trang chủ

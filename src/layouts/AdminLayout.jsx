@@ -5,17 +5,13 @@ import { AdminNavbar } from "../pages/admin/AdminNavbar";
 export const AdminLayout = ({ children }) => {
   return (
     <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar */}
       <AdminSidebar />
 
-      {/* Main content area */}
       <div className="flex-1 md:ml-64 flex flex-col">
         <AdminNavbar />
 
-        {/* Nội dung chính của trang */}
         <main className="flex-1 p-6 md:p-8 mt-16 overflow-y-auto">
-          {children || <Outlet />}{" "}
-          {/* Render children hoặc Outlet cho nested routes */}
+          {children || <Outlet />}
         </main>
       </div>
     </div>

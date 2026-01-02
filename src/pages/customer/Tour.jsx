@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Calendar,
@@ -15,8 +15,7 @@ import {
 import { useApi } from "../../hooks/useApi";
 import { VIETNAM_PROVINCES } from "../../utils/contain";
 
-// --- Cấu Hình Ban Đầu ---
-const PAGE_LIMIT = 1;
+const PAGE_LIMIT = 5;
 
 const INITIAL_FILTERS = {
   name: "",
@@ -28,30 +27,20 @@ const INITIAL_FILTERS = {
   pageSize: PAGE_LIMIT,
 };
 
-// --- Dữ liệu giả định (Mock Data) ---
-
-// --- Hàm giả lập gọi API (Mock API Function) ---
-
-// --- Component Chính: TourPage ---
 const TourPage = () => {
   const navigate = useNavigate();
 
-  // State quản lý Tours và Phân trang
   const [tours, setTours] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [totalElements, setTotalElements] = useState(0);
 
-  // State 1: Bộ lọc người dùng đang chỉnh sửa (Draft Filters)
   const [draftFilters, setDraftFilters] = useState(INITIAL_FILTERS);
 
-  // State 2: Bộ lọc đang được áp dụng cho API (Search Filters)
-  // Đây là state trigger API call
   const [searchFilters, setSearchFilters] = useState(INITIAL_FILTERS);
   const { callApi } = useApi();
 
-  // Hàm gọi API
   const fetchTours = useCallback(async (page, currentFilters) => {
     setIsLoading(true);
     const params = new URLSearchParams({
@@ -89,7 +78,6 @@ const TourPage = () => {
     fetchTours(currentPage, searchFilters);
   }, [currentPage, searchFilters, fetchTours]);
 
-  // Xử lý thay đổi Input (Cập nhật Draft Filters)
   const handleFilterChange = (e) => {
     const { name, value, type } = e.target;
     setDraftFilters((prev) => ({
@@ -98,24 +86,21 @@ const TourPage = () => {
     }));
   };
 
-  // Xử lý khi nhấn nút "Áp Dụng Bộ Lọc" (Cập nhật Search Filters)
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(1);
     setSearchFilters(draftFilters);
   };
 
-  // Xử lý nút Reset Filters
   const handleResetFilters = () => {
-    setDraftFilters(INITIAL_FILTERS); // Reset form
-    setSearchFilters(INITIAL_FILTERS); // Reset API filters (kích hoạt Effect 1 để gọi API)
+    setDraftFilters(INITIAL_FILTERS);
+    setSearchFilters(INITIAL_FILTERS);
   };
 
   const handleViewDetail = (tourId) => {
-    navigate(`/tours/${tourId}/details`); // Điều hướng đến trang chi tiết
+    navigate(`/client/tours/${tourId}/details`);
   };
 
-  // --- Component Phụ: Tour Card ---
   const TourCard = ({ tour }) => {
     const formatCurrency = (amount) => {
       return new Intl.NumberFormat("vi-VN", {
@@ -130,7 +115,6 @@ const TourPage = () => {
 
     return (
       <div className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row transform transition duration-300 hover:scale-[1.01] hover:shadow-xl">
-        {/* Image Section */}
         <div className="relative w-full md:w-1/3 h-48 md:h-auto flex-shrink-0">
           <img
             src={
@@ -142,7 +126,6 @@ const TourPage = () => {
           />
         </div>
 
-        {/* Content Section */}
         <div className="p-4 md:p-6 flex flex-col flex-grow">
           <div className="flex justify-between items-start mb-2">
             <h3 className="text-xl font-bold text-gray-900 line-clamp-2">
@@ -179,7 +162,6 @@ const TourPage = () => {
             </p>
           </div>
 
-          {/* Detail Button */}
           <div className="mt-4 flex justify-end">
             <button
               onClick={() => handleViewDetail(tour.tourId)}
@@ -194,7 +176,6 @@ const TourPage = () => {
     );
   };
 
-  // --- Component Phụ: Phân Trang ---
   const Pagination = ({ totalPages, currentPage, setPage, totalElements }) => {
     if (totalPages <= 1) return null;
 
@@ -253,7 +234,6 @@ const TourPage = () => {
     );
   };
 
-  // --- JSX Render ---
   return (
     <div className="min-h-screen bg-gray-50 p-4 sm:p-8">
       <header className="mb-8 text-center">
@@ -266,7 +246,6 @@ const TourPage = () => {
       </header>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        {/* --- Cột 1: Thanh Lọc/Tìm Kiếm (Layout Dọc) --- */}
         <div className="lg:col-span-1 bg-white p-6 rounded-xl shadow-xl h-fit sticky top-4 border-t-4 border-indigo-500">
           <h2 className="text-2xl font-bold text-gray-800 mb-5 flex items-center">
             <Search size={24} className="mr-2 text-indigo-500" />
@@ -274,7 +253,6 @@ const TourPage = () => {
           </h2>
 
           <form onSubmit={handleSearch} className="space-y-6">
-            {/* 1. Lọc theo Tên Tour */}
             <div>
               <label className="block text-md font-semibold text-gray-700 mb-2">
                 Tên Tour / Điểm đến
@@ -289,20 +267,17 @@ const TourPage = () => {
               />
             </div>
 
-            {/* 2. Lọc theo Thành Phố */}
             <div>
               <label className="block text-md font-semibold text-gray-700 mb-2 flex items-center">
                 <MapPin size={18} className="mr-2 text-indigo-500" />
                 Thành Phố Khởi hành/Đến
               </label>
 
-              {/* Bọc select trong div relative để thêm icon mũi tên tùy chỉnh */}
               <div className="relative">
                 <select
                   name="city"
                   value={draftFilters.city}
                   onChange={handleFilterChange}
-                  // Dùng 'appearance-none' để ẩn mũi tên mặc định của trình duyệt
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 transition appearance-none pr-10 bg-white"
                 >
                   <option value="">--- tất cả thành phố ---</option>
@@ -313,14 +288,12 @@ const TourPage = () => {
                   ))}
                 </select>
 
-                {/* Icon Chevron (Mũi tên xuống) */}
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
                   <ChevronDown size={20} />
                 </div>
               </div>
             </div>
 
-            {/* 3. Lọc theo Khoảng Ngày (LocalDate) */}
             <div className="border-t pt-4">
               <h3 className="text-md font-semibold text-gray-700 mb-2 flex items-center">
                 <Calendar size={18} className="mr-2 text-sky-500" /> Khoảng Thời
@@ -354,7 +327,6 @@ const TourPage = () => {
               </div>
             </div>
 
-            {/* 4. Lọc theo Khoảng Giá */}
             <div className="border-t pt-4">
               <h3 className="text-md font-semibold text-gray-700 mb-2 flex items-center">
                 <DollarSign size={18} className="mr-2 text-red-500" /> Khoảng
@@ -392,10 +364,9 @@ const TourPage = () => {
               </div>
             </div>
 
-            {/* Nút Tìm Kiếm/Reset */}
             <div className="pt-4 border-t space-y-3">
               <button
-                type="submit" // Kích hoạt handleSearch
+                type="submit"
                 className="w-full flex items-center justify-center py-3 px-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition duration-300 shadow-md"
               >
                 <Search size={20} className="mr-2" /> Áp Dụng Bộ Lọc
@@ -411,7 +382,6 @@ const TourPage = () => {
           </form>
         </div>
 
-        {/* --- Cột 2: Hiển Thị Kết Quả --- */}
         <div className="lg:col-span-3">
           <h2 className="text-2xl font-bold text-gray-800 mb-4">
             Khám Phá Tour Du Lịch (
@@ -421,7 +391,6 @@ const TourPage = () => {
             )
           </h2>
 
-          {/* Loading State */}
           {isLoading ? (
             <div className="flex justify-center items-center h-64 bg-white rounded-xl shadow-lg">
               <Loader2 className="w-10 h-10 animate-spin text-indigo-600" />
@@ -433,14 +402,12 @@ const TourPage = () => {
             <>
               {tours.length > 0 ? (
                 <>
-                  {/* Danh sách Tour */}
                   <div className="space-y-6">
                     {tours.map((tour) => (
                       <TourCard key={tour.tourId} tour={tour} />
                     ))}
                   </div>
 
-                  {/* Phân Trang */}
                   <Pagination
                     totalPages={totalPages}
                     currentPage={currentPage}
@@ -449,7 +416,6 @@ const TourPage = () => {
                   />
                 </>
               ) : (
-                // No Results State
                 <div className="text-center p-12 bg-white rounded-xl shadow-lg">
                   <Search size={48} className="mx-auto text-gray-400 mb-4" />
                   <h2 className="text-2xl font-semibold text-gray-800">
