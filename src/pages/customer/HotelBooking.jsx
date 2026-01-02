@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   addDays,
   addHours,
@@ -80,9 +80,6 @@ export const HotelBookingPage = () => {
     setBooking((b) => ({ ...b, checkOut: format(end, formatType) }));
   }, [booking.checkIn, booking.duration, booking.bookingType]);
 
-  // --------------------------
-  // Tổng giá
-  // --------------------------
   const totalPrice = useMemo(() => {
     if (!apiData) return 0;
     const unit =
@@ -92,20 +89,15 @@ export const HotelBookingPage = () => {
     return unit * booking.duration;
   }, [apiData, booking.bookingType, booking.duration]);
 
-  // --------------------------
-  // Submit
-  // --------------------------
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // VALIDATION CHO CHECKIN: Không quá 1 ngày so với hiện tại
     if (name === "checkIn" && value) {
       const checkInDate = parseDate(value);
       const { min, max } = getMinMaxDates(booking.bookingType);
-      const minDate = parseDate(min.replace("T", " ")); // Chuyển sang định dạng parseISO có thể hiểu
+      const minDate = parseDate(min.replace("T", " "));
       const maxDate = parseDate(max.replace("T", " "));
 
-      // Kiểm tra nếu checkIn nằm ngoài phạm vi [MinDate, MaxDate]
       if (
         checkInDate &&
         (isBefore(checkInDate, minDate) || isAfter(checkInDate, maxDate))
@@ -116,7 +108,7 @@ export const HotelBookingPage = () => {
             "dd/MM/yyyy HH:mm"
           )} đến ${format(maxDate, "dd/MM/yyyy HH:mm")})`
         );
-        return; // Ngăn chặn cập nhật state
+        return;
       }
     }
 
@@ -126,25 +118,24 @@ export const HotelBookingPage = () => {
     }));
   };
 
-  const [isSubmitting, setIsSubmitting] = useState(false); // Thêm state cho hiệu ứng
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async () => {
     if (!apiData || isSubmitting) return;
 
-    setIsSubmitting(true); // Bắt đầu hiệu ứng
+    setIsSubmitting(true);
 
     const isDaily = booking.bookingType === "DAILY";
 
     const payload = {
       ...booking,
       totalPrice,
-      // Format lại checkIn/checkOut tùy theo loại (cần format chính xác khi gửi API)
       checkIn: isDaily
         ? format(parseDate(booking.checkIn), "yyyy-MM-dd")
-        : format(parseDate(booking.checkIn), "yyyy-MM-dd'T'HH:mm:ss"), // format có giờ phút
+        : format(parseDate(booking.checkIn), "yyyy-MM-dd'T'HH:mm:ss"),
       checkOut: isDaily
         ? format(parseDate(booking.checkOut), "yyyy-MM-dd")
-        : format(parseDate(booking.checkOut), "yyyy-MM-dd'T'HH:mm:ss"), // format có giờ phút
+        : format(parseDate(booking.checkOut), "yyyy-MM-dd'T'HH:mm:ss"),
     };
 
     console.log("SEND BOOKING:", payload);
@@ -163,12 +154,8 @@ export const HotelBookingPage = () => {
     alert(response.message);
     setIsSubmitting(false);
     const code = response.data;
-    navigate(`/processing/${code}/hotel`);
+    navigate(`/client/processing/${code}/hotel`);
   };
-
-  // --------------------------
-  // UI
-  // --------------------------
 
   if (loading) return <div className="p-10 text-center">Đang tải...</div>;
   if (error || !apiData)
@@ -180,12 +167,10 @@ export const HotelBookingPage = () => {
 
   const { roomName, hotelName, hotelCity, hotelAddress, hotelPhone } = apiData;
 
-  // Tính min/max date cho input
   const dateLimits = getMinMaxDates(booking.bookingType);
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      {/* Nút Back */}
       <button
         onClick={() => navigate(-1)}
         className="mb-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg"
@@ -202,14 +187,12 @@ export const HotelBookingPage = () => {
         </p>
 
         <div className="grid lg:grid-cols-2 gap-10">
-          {/* LEFT FORM */}
           <div>
             <h3 className="font-bold text-xl mb-4 text-indigo-600">
               📝 Chi Tiết Đặt Phòng
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {/* Booking Type */}
               <div>
                 <label className="font-medium">Loại đặt phòng</label>
                 <select
@@ -227,7 +210,6 @@ export const HotelBookingPage = () => {
                 </select>
               </div>
 
-              {/* Payment */}
               <div>
                 <label className="font-medium">Phương thức thanh toán</label>
                 <select
@@ -241,7 +223,6 @@ export const HotelBookingPage = () => {
                 </select>
               </div>
 
-              {/* Check-in */}
               <div>
                 <label className="font-medium">Check-in</label>
                 <input
@@ -252,12 +233,11 @@ export const HotelBookingPage = () => {
                   value={booking.checkIn}
                   onChange={handleChange}
                   className="border p-2 rounded w-full"
-                  min={dateLimits.min} // Thêm giới hạn min
-                  max={dateLimits.max} // Thêm giới hạn max
+                  min={dateLimits.min}
+                  max={dateLimits.max}
                 />
               </div>
 
-              {/* Duration */}
               <div>
                 <label className="font-medium">
                   Số {booking.bookingType === "DAILY" ? "ngày" : "giờ"}
@@ -273,7 +253,6 @@ export const HotelBookingPage = () => {
               </div>
             </div>
 
-            {/* Hotel Info */}
             <div className="mt-6 p-4 bg-indigo-50 rounded-lg">
               <h4 className="font-bold mb-2">🏨 Khách sạn</h4>
               <p>Tên: {hotelName}</p>
@@ -284,7 +263,6 @@ export const HotelBookingPage = () => {
             </div>
           </div>
 
-          {/* RIGHT PAYMENT SUMMARY */}
           <div className="border p-6 rounded-xl shadow-lg">
             <h3 className="font-bold text-xl mb-4 text-red-600">
               🧾 Tóm Tắt Thanh Toán

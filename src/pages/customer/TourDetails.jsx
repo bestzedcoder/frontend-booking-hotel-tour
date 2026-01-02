@@ -15,6 +15,7 @@ import {
   Phone,
   User,
   MessageSquare,
+  AlertTriangle,
 } from "lucide-react";
 import { useApi } from "../../hooks/useApi";
 
@@ -34,27 +35,50 @@ const TourDetails = () => {
     }).format(amount);
   };
 
-  const fetchDetails = useCallback(async (id) => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const response = await callApi("get", `tours/${id}/info`);
-      if (response.success) {
-        setTour(response.data);
-      } else {
-        setError(response.message);
+  const fetchDetails = useCallback(
+    async (id) => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const response = await callApi("get", `tours/${id}/info`);
+        if (response.success) {
+          setTour(response.data);
+        } else {
+          setError(response.message);
+        }
+      } catch (err) {
+        setError("Đã xảy ra lỗi khi kết nối máy chủ.");
+        console.error(err);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (err) {
-      setError("Đã xảy ra lỗi khi kết nối máy chủ.");
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    },
+    [callApi]
+  );
 
   useEffect(() => {
     fetchDetails(tourId);
   }, [tourId, fetchDetails]);
+
+  // LOGIC CẬP NHẬT: Kiểm tra hạn đăng ký trước 1 ngày khởi hành
+  const getDeadlineInfo = () => {
+    if (!tour || !tour.startDate) return { isExpired: false, deadlineDate: "" };
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const startDate = new Date(tour.startDate);
+    const deadline = new Date(startDate);
+    deadline.setDate(deadline.getDate() - 1); // Hạn là trước 1 ngày
+    deadline.setHours(0, 0, 0, 0);
+
+    return {
+      isExpired: today > deadline,
+      deadlineStr: deadline.toLocaleDateString("vi-VN"),
+    };
+  };
+
+  const { isExpired, deadlineStr } = getDeadlineInfo();
 
   if (isLoading) {
     return (
@@ -163,20 +187,40 @@ const TourDetails = () => {
           <div className="lg:col-span-1 space-y-8">
             {tour.owner && <OwnerInfoBox owner={tour.owner} />}
 
-            <div className="sticky top-20 bg-indigo-50 p-6 rounded-xl shadow-xl border border-indigo-200">
-              <h3 className="text-xl font-bold text-indigo-800 mb-4 border-b pb-2">
+            <div
+              className={`sticky top-20 p-6 rounded-xl shadow-xl border ${
+                isExpired
+                  ? "bg-gray-100 border-gray-300"
+                  : "bg-indigo-50 border-indigo-200"
+              }`}
+            >
+              <h3
+                className={`text-xl font-bold mb-4 border-b pb-2 ${
+                  isExpired ? "text-gray-500" : "text-indigo-800"
+                }`}
+              >
                 Thông tin Đặt Tour
               </h3>
 
               <div className="space-y-3 mb-6">
                 <p className="flex justify-between items-center text-xl font-medium text-gray-700">
                   Giá trọn gói chỉ từ:
-                  <span className="text-3xl font-extrabold text-red-600">
+                  <span
+                    className={`text-3xl font-extrabold ${
+                      isExpired ? "text-gray-400" : "text-red-600"
+                    }`}
+                  >
                     {formatCurrency(tour.tourPrice)}
                   </span>
                 </p>
-                <p className="text-sm text-gray-500 italic">
-                  *Giá trên áp dụng cho 01 người lớn
+                {/* Hiển thị hạn đăng ký */}
+                <p
+                  className={`text-sm font-semibold flex items-center ${
+                    isExpired ? "text-red-500" : "text-indigo-600"
+                  }`}
+                >
+                  <Clock size={16} className="mr-1" />
+                  Hạn đặt chỗ: {deadlineStr}
                 </p>
               </div>
 
@@ -197,20 +241,28 @@ const TourDetails = () => {
                     Khách sạn/Du thuyền tiêu chuẩn 4-5 sao (tùy chọn).
                   </span>
                 </p>
-                <p className="flex items-start text-sm text-gray-600">
-                  <CheckCircle
-                    size={18}
-                    className="text-green-500 mr-2 mt-1 flex-shrink-0"
-                  />
-                  <span>Toàn bộ các bữa ăn theo lịch trình đã định.</span>
-                </p>
               </div>
 
+              {/* Nút đặt tour thay đổi dựa trên trạng thái hết hạn */}
+              {isExpired ? (
+                <div className="bg-red-50 p-3 rounded-lg border border-red-200 flex items-center gap-2 text-red-700 mb-4">
+                  <AlertTriangle size={20} />
+                  <span className="text-xs font-bold uppercase">
+                    Đã hết hạn đăng ký đặt chỗ
+                  </span>
+                </div>
+              ) : null}
+
               <button
-                onClick={() => navigate(`/tours/${tourId}/booking`)}
-                className="w-full flex items-center justify-center py-3 px-4 bg-red-600 text-white text-lg font-bold rounded-lg hover:bg-red-700 transition duration-300 shadow-xl shadow-red-300/50 mt-4"
+                disabled={isExpired}
+                onClick={() => navigate(`/client/tours/${tourId}/booking`)}
+                className={`w-full flex items-center justify-center py-3 px-4 text-white text-lg font-bold rounded-lg transition duration-300 shadow-xl mt-4 ${
+                  isExpired
+                    ? "bg-gray-400 cursor-not-allowed shadow-none"
+                    : "bg-red-600 hover:bg-red-700 shadow-red-300/50"
+                }`}
               >
-                ĐẶT TOUR NGAY
+                {isExpired ? "NGỪNG NHẬN KHÁCH" : "ĐẶT TOUR NGAY"}
               </button>
             </div>
           </div>

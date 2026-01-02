@@ -102,7 +102,7 @@ const TourBookingPage = () => {
       )}\nPhương thức: ${paymentMethod}`
     );
     const code = response.data;
-    navigate(`/processing/${code}/tour`);
+    navigate(`/client/processing/${code}/tour`);
   }, [tour, people, paymentMethod, totalPrice.total, formatCurrency]);
 
   const handlePeopleChange = (change) => {

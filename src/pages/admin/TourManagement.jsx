@@ -61,22 +61,19 @@ const TourManagement = () => {
 
   useEffect(() => {
     fetchTours();
-  }, [searchParams]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
-  // Hàm xử lý mở modal xác nhận xóa
   const handleDelete = async (tourId) => {
     setDeleteConfirm(tourId);
   };
 
-  // Hàm xử lý xác nhận xóa tour
   const confirmDelete = async (tourId) => {
     setDeleteLoading(true);
     try {
-      // Giả định API endpoint để xóa tour
       const response = await callApi("delete", `/tours/${tourId}`);
       alert(response.message || "Tour deleted successfully!");
       setDeleteConfirm(null);
-      fetchTours(); // Tải lại danh sách sau khi xóa
+      fetchTours();
     } catch (err) {
       console.error("[v0] Delete Error:", err);
       alert("An error occurred while deleting the tour.");
@@ -85,12 +82,10 @@ const TourManagement = () => {
     }
   };
 
-  // Hàm xử lý hủy xóa tour
   const cancelDelete = () => {
     setDeleteConfirm(null);
   };
 
-  // Hàm xử lý đặt lại bộ lọc
   const handleResetFilters = () => {
     setFilterName("");
     setFilterCity("");
@@ -103,17 +98,15 @@ const TourManagement = () => {
     });
   };
 
-  // Hàm xử lý tìm kiếm/lọc
   const handleSearch = () => {
     setSearchParams({
       tourName: filterName,
       tourCity: filterCity,
       owner: filterOwner,
-      page: 1, // Luôn reset về trang 1 khi thực hiện tìm kiếm mới
+      page: 1,
     });
   };
 
-  // Hàm xử lý thay đổi trang
   const handlePageChange = (newPage) => {
     setSearchParams((prev) => ({
       ...prev,
@@ -127,7 +120,6 @@ const TourManagement = () => {
   const isPreviousDisabled = searchParams.page === 1 || loading;
   const isNextDisabled = searchParams.page === totalPages || loading;
 
-  // Hàm định dạng giá tiền
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN", {
       style: "currency",
@@ -135,10 +127,8 @@ const TourManagement = () => {
     }).format(price);
   };
 
-  // Hàm định dạng ngày tháng
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
-    // Giả định API trả về chuỗi ISO date (e.g., 'YYYY-MM-DD')
     return new Date(dateString).toLocaleDateString("vi-VN");
   };
 
@@ -154,7 +144,6 @@ const TourManagement = () => {
           </p>
         </div>
 
-        {/* --- Card thống kê --- */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700">
             <p className="text-slate-600 dark:text-slate-400 text-sm font-medium mb-2">
@@ -182,7 +171,6 @@ const TourManagement = () => {
           </div>
         </div>
 
-        {/* --- Search & Filter --- */}
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-8">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
@@ -293,7 +281,6 @@ const TourManagement = () => {
           </div>
         </div>
 
-        {/* --- Tour List and Pagination --- */}
         {!loading && tours.length > 0 ? (
           <div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -306,7 +293,6 @@ const TourManagement = () => {
                       : ""
                   }`}
                 >
-                  {/* Phần Ảnh */}
                   <div className="h-48 bg-slate-200 dark:bg-slate-700 overflow-hidden">
                     <img
                       src={tour.tourImageUrl || "/placeholder.svg"}
@@ -315,9 +301,7 @@ const TourManagement = () => {
                     />
                   </div>
 
-                  {/* Phần Nội dung và Nút */}
                   <div className="p-5 flex flex-col flex-grow">
-                    {/* Nội dung chính */}
                     <div className="flex-grow">
                       <div className="flex items-start justify-between mb-3">
                         <h3 className="text-lg font-semibold text-slate-900 dark:text-white pr-2 flex-1">
@@ -364,7 +348,6 @@ const TourManagement = () => {
                       </p>
                     </div>
 
-                    {/* Nút Delete Tour */}
                     <button
                       onClick={() => handleDelete(tour.tourId)}
                       disabled={deleteLoading}
@@ -420,7 +403,6 @@ const TourManagement = () => {
               ))}
             </div>
 
-            {/* --- Pagination --- */}
             <div className="flex items-center justify-between bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
               <p className="text-sm text-slate-600 dark:text-slate-400">
                 Showing page{" "}
@@ -458,7 +440,6 @@ const TourManagement = () => {
                       (pageNumber >= searchParams.page - 1 &&
                         pageNumber <= searchParams.page + 1);
 
-                    // Logic hiển thị dấu "..."
                     if (!isVisible && i > 0 && i < totalPages - 1) {
                       const showDotsBefore =
                         pageNumber === 2 && searchParams.page > 2;
@@ -513,7 +494,6 @@ const TourManagement = () => {
             </div>
           </div>
         ) : loading ? (
-          /* --- Loading State --- */
           <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
             <svg
               className="w-16 h-16 text-blue-600 dark:text-blue-400 mx-auto mb-4 animate-spin"
@@ -540,7 +520,6 @@ const TourManagement = () => {
             </p>
           </div>
         ) : (
-          /* --- No Results State --- */
           <div className="text-center py-12 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700">
             <svg
               className="w-16 h-16 text-slate-400 dark:text-slate-600 mx-auto mb-4"
@@ -565,7 +544,6 @@ const TourManagement = () => {
         )}
       </div>
 
-      {/* --- Delete Confirmation Modal --- */}
       {deleteConfirm !== null && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-slate-800 rounded-xl shadow-xl max-w-md w-full border border-slate-200 dark:border-slate-700 transform transition-all">

@@ -6,18 +6,14 @@ import { Link } from "react-router-dom";
 export const AdminNavbar = () => {
   const { user, logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const menuRef = useRef(null); // Khai báo useRef
-
-  // Lấy thông tin người dùng hoặc dùng giá trị mặc định
+  const menuRef = useRef(null);
   const adminName = user?.fullName;
   const adminEmail = user?.email;
   const avatar =
-    user?.urlImage || "https://cdn-icons-png.flaticon.com/512/3177/3177440.png"; // Nguồn avatar động
+    user?.urlImage || "https://cdn-icons-png.flaticon.com/512/3177/3177440.png";
 
-  // Logic đóng dropdown khi click ra ngoài
   useEffect(() => {
     const handleClickOutside = (e) => {
-      // Đã sửa lỗi dùng setIsOpen và menuRef.current
       if (menuRef.current && !menuRef.current.contains(e.target)) {
         setDropdownOpen(false);
       }
@@ -28,19 +24,14 @@ export const AdminNavbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 md:left-64 right-0 h-16 bg-white shadow-sm flex items-center justify-between px-6 z-40 border-b border-gray-100">
-      {/* Breadcrumbs hoặc Tiêu đề trang */}
-      <div className="text-xl font-semibold text-gray-800">
-        Dashboard {/* Có thể thay đổi động dựa trên route */}
-      </div>
+      <div className="text-xl font-semibold text-gray-800">Dashboard</div>
 
       <div className="flex items-center space-x-4">
-        {/* Nút Thông Báo */}
         <button className="relative p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition">
           <Bell className="w-5 h-5 text-gray-600" />
           <span className="absolute top-1 right-1 block w-2 h-2 bg-red-500 rounded-full ring-2 ring-white"></span>
         </button>
 
-        {/* Menu Người Dùng */}
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
@@ -49,7 +40,7 @@ export const AdminNavbar = () => {
             <img
               src={avatar}
               alt="Admin Avatar"
-              className="w-8 h-8 rounded-full border border-indigo-200 object-cover" // Thêm object-cover để hình ảnh luôn đầy đủ
+              className="w-8 h-8 rounded-full border border-indigo-200 object-cover"
             />
             <span className="text-sm font-medium text-gray-700 hidden md:block">
               {adminName}
@@ -80,7 +71,6 @@ export const AdminNavbar = () => {
                 <Settings className="w-4 h-4 mr-2 text-blue-500" /> Cài Đặt
               </Link>
               <div className="border-t border-gray-100 my-1"></div>
-              {/* Thêm chức năng logout thực tế */}
               <button
                 onClick={logout}
                 className="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50"

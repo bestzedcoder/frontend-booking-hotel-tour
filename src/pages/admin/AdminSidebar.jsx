@@ -1,26 +1,20 @@
 import {
-  BarChart,
   CalendarCheck,
   Home,
   Hotel,
   Plane,
-  Settings,
   Users,
   ChevronDown,
-  CreditCard,
-  Key,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-// 👈 THÊM 'useEffect' VÀO ĐÂY
 import { useState, useEffect } from "react";
 
 export const AdminSidebar = () => {
   const location = useLocation();
   const [openSubmenu, setOpenSubmenu] = useState(null);
 
-  // Cấu trúc navItems mới hỗ trợ subItems
   const navItems = [
-    { name: "Dashboard", icon: Home, path: "/admin", type: "item" },
+    { name: "Dashboard", icon: Home, path: "/admin/dashboard", type: "item" },
     { name: "Người Dùng", icon: Users, path: "/admin/users", type: "item" },
     { name: "Quản Lý Tour", icon: Plane, path: "/admin/tours", type: "item" },
     {
@@ -47,11 +41,8 @@ export const AdminSidebar = () => {
         },
       ],
     },
-    // { name: "Cài Đặt", icon: Settings, path: "/admin/settings", type: "item" },
-    // { name: "Báo Cáo", icon: BarChart, path: "/admin/reports", type: "item" },
   ];
 
-  // Hàm kiểm tra xem một đường dẫn có phải là active (hoặc là cha của đường dẫn active) không
   const checkIsActive = (item) => {
     if (item.type === "item") {
       return location.pathname === item.path;
@@ -64,7 +55,6 @@ export const AdminSidebar = () => {
     return location.pathname === item.path;
   };
 
-  // Hàm kiểm tra đường dẫn item con
   const checkIsSubItemActive = (path) => {
     return location.pathname === path;
   };
@@ -78,11 +68,10 @@ export const AdminSidebar = () => {
         setOpenSubmenu(item.name);
       }
     });
-  }, [location.pathname]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
 
   return (
     <aside className="fixed top-0 left-0 w-64 h-full bg-gradient-to-br from-indigo-700 to-blue-800 text-white shadow-lg z-50 flex flex-col pt-4 pb-6">
-      {/* Tiêu đề Admin Panel */}
       <div className="px-6 pb-6 border-b border-indigo-600/50">
         <h1 className="text-3xl font-extrabold tracking-tight">
           <span className="text-indigo-200">Travel</span>
@@ -91,7 +80,6 @@ export const AdminSidebar = () => {
         <p className="text-indigo-200 text-sm mt-1">Admin Panel</p>
       </div>
 
-      {/* Menu Điều Hướng */}
       <nav className="mt-8 flex-grow overflow-y-auto">
         <ul className="space-y-1">
           {navItems.map((item) => {
@@ -99,7 +87,6 @@ export const AdminSidebar = () => {
             const isSubmenuOpen = openSubmenu === item.name || isActive;
 
             if (item.type === "item") {
-              // Xử lý mục menu đơn
               return (
                 <li key={item.name}>
                   <Link
@@ -122,11 +109,9 @@ export const AdminSidebar = () => {
               );
             }
 
-            // Xử lý mục menu có submenu
             if (item.type === "submenu") {
               return (
                 <li key={item.name}>
-                  {/* Menu cha (nút bấm) */}
                   <button
                     onClick={() =>
                       setOpenSubmenu(isSubmenuOpen ? null : item.name)
@@ -155,7 +140,6 @@ export const AdminSidebar = () => {
                     />
                   </button>
 
-                  {/* Submenu */}
                   {isSubmenuOpen && (
                     <ul className="mt-1 ml-6 space-y-1 border-l-2 border-indigo-400">
                       {item.items.map((subItem) => {
@@ -187,7 +171,6 @@ export const AdminSidebar = () => {
         </ul>
       </nav>
 
-      {/* Footer Sidebar */}
       <div className="px-6 pt-6 border-t border-indigo-600/50 mt-auto">
         <p className="text-xs text-indigo-300">
           © {new Date().getFullYear()} TravelMate

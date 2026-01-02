@@ -373,7 +373,7 @@ const HotelDetailsPage = () => {
   }, [hotelId, callApi]);
 
   const availableRooms =
-    hotelData?.rooms.filter((r) => r.status === RoomStatus.AVAILABLE) || [];
+    hotelData?.rooms?.filter((r) => r.status === RoomStatus.AVAILABLE) || [];
 
   const filtered = selectedRoomType
     ? availableRooms.filter((r) => r.roomType === selectedRoomType)

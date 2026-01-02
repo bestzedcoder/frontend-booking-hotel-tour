@@ -1,16 +1,13 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import {
   Search,
   Loader2,
-  Filter,
   X,
   ChevronLeft,
   ChevronRight,
   UserCheck,
 } from "lucide-react";
 import { useApi } from "../../hooks/useApi";
-
-// --- CÁC HẰNG VÀ MAPPING ---
 
 const LIMIT_OPTIONS = [
   { value: 10, label: "10 / trang" },
@@ -53,51 +50,39 @@ const formatCurrency = (amount) =>
     amount || 0
   );
 
-// --- COMPONENT CHÍNH ---
-
 export const BookingOfManagement = () => {
   const { callApi } = useApi();
 
-  // Dữ liệu gốc lấy về từ API (toàn bộ booking của owner)
   const [originalData, setOriginalData] = useState([]);
 
-  // Trạng thái Loading/Error
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isSearched, setIsSearched] = useState(false);
 
-  // Bộ lọc được chọn trên UI (Chỉ dùng để lọc Client-side)
   const [uiFilters, setUiFilters] = useState({
     page: 1,
     limit: 10,
     status: null,
     booking_type: null,
     payment_method: null,
-    // username là giá trị đã tìm kiếm thành công
     ownerUsername: "",
   });
 
-  // Trạng thái cho input text Owner
   const [searchOwnerUsername, setSearchOwnerUsername] = useState("");
-
-  // --- LOGIC LỌC VÀ PHÂN TRANG CLIENT-SIDE (useMemo) ---
 
   const { displayedData, totalElements, totalPages, currentPages } =
     useMemo(() => {
       let filtered = originalData;
       const { status, booking_type, payment_method, page, limit } = uiFilters;
 
-      // 1. Lọc theo Status
       if (status) {
         filtered = filtered.filter((booking) => booking.status === status);
       }
 
-      // 2. Lọc theo Booking Type
       if (booking_type) {
         filtered = filtered.filter((booking) => booking.type === booking_type);
       }
 
-      // 3. Lọc theo Payment Method
       if (payment_method) {
         filtered = filtered.filter(
           (booking) => booking.paymentMethod === payment_method
@@ -108,7 +93,6 @@ export const BookingOfManagement = () => {
       const totalPgs = Math.ceil(count / limit);
       const currentPageIndex = page > totalPgs ? totalPgs || 1 : page;
 
-      // 4. Phân trang
       const startIndex = (currentPageIndex - 1) * limit;
       const endIndex = startIndex + limit;
       const paginatedData = filtered.slice(startIndex, endIndex);
@@ -120,9 +104,6 @@ export const BookingOfManagement = () => {
         currentPages: currentPageIndex,
       };
     }, [originalData, uiFilters]);
-  // Khi originalData hoặc uiFilters thay đổi, logic này sẽ chạy lại
-
-  // --- HÀM GỌI API (CHỈ DÙNG KHI TÌM KIẾM OWNER) ---
 
   const fetchBookings = useCallback(
     async (username) => {
@@ -134,10 +115,8 @@ export const BookingOfManagement = () => {
       setIsSearched(false);
 
       try {
-        // Giả định API endpoint là: /by-admin/business (như bạn cung cấp)
         const response = await callApi(
           "get",
-          // Sử dụng tham số "business" như trong API bạn cung cấp
           `bookings/by-admin/business?business=${username}`
         );
 
@@ -146,11 +125,10 @@ export const BookingOfManagement = () => {
         setOriginalData(bookings);
         setIsSearched(true);
 
-        // Đặt lại các UI filters (page/limit/ownerUsername) sau khi fetch thành công
         setUiFilters((prev) => ({
           ...prev,
           ownerUsername: username,
-          page: 1, // Reset trang về 1 khi tải dữ liệu mới
+          page: 1,
           limit: prev.limit,
         }));
       } catch (err) {
@@ -165,30 +143,23 @@ export const BookingOfManagement = () => {
     [callApi]
   );
 
-  // --- HANDLERS (CHỈ CẬP NHẬT UI FILTER) ---
-
-  // Xử lý thay đổi trường Select (status, type, method)
-  // KHÔNG GỌI API, chỉ cập nhật UI filters
   const handleFilterSelectChange = (field, value) => {
     setUiFilters((prev) => ({
       ...prev,
       [field]: value || null,
-      page: 1, // Luôn reset trang về 1 khi lọc
+      page: 1,
     }));
   };
 
-  // Xử lý thay đổi Limit
-  // KHÔNG GỌI API, chỉ cập nhật UI filters
   const handleLimitChange = (e) => {
     const newLimit = parseInt(e.target.value, 10);
     setUiFilters((prev) => ({
       ...prev,
       limit: newLimit,
-      page: 1, // Luôn reset trang về 1 khi thay đổi limit
+      page: 1,
     }));
   };
 
-  // Xử lý submit tìm kiếm (CHỈ DÙNG ĐỂ GỌI API OWNER MỚI)
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     const username = searchOwnerUsername.trim();
@@ -200,19 +171,15 @@ export const BookingOfManagement = () => {
       return;
     }
 
-    // Kích hoạt API call
     fetchBookings(username);
   };
 
-  // Xử lý phân trang
-  // KHÔNG GỌI API, chỉ cập nhật UI filters
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {
       setUiFilters((prev) => ({ ...prev, page: newPage }));
     }
   };
 
-  // Xóa tất cả bộ lọc
   const handleClearFilters = () => {
     setOriginalData([]);
     setSearchOwnerUsername("");
@@ -228,7 +195,6 @@ export const BookingOfManagement = () => {
     setIsSearched(false);
   };
 
-  // --- RENDER PHÂN TRANG ---
   const renderPagination = () => {
     if (!originalData.length || totalPages <= 1) return null;
 
@@ -289,7 +255,6 @@ export const BookingOfManagement = () => {
     );
   };
 
-  // --- JSX RENDER ---
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <h1 className="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-2">
@@ -297,13 +262,11 @@ export const BookingOfManagement = () => {
         theo Owner
       </h1>
 
-      {/* Bộ lọc và Tìm kiếm */}
       <div className="bg-white p-4 rounded-lg shadow-md mb-6 border border-gray-200">
         <form
           onSubmit={handleSearchSubmit}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 xl:grid-cols-6 gap-4 items-end"
         >
-          {/* INPUT BẮT BUỘC: Username Owner */}
           <div className="lg:col-span-2">
             <label
               htmlFor="owner-username"
@@ -331,7 +294,6 @@ export const BookingOfManagement = () => {
             </div>
           </div>
 
-          {/* Lọc Trạng thái */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Trạng thái
@@ -342,7 +304,7 @@ export const BookingOfManagement = () => {
                 handleFilterSelectChange("status", e.target.value)
               }
               className="w-full border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 text-sm"
-              disabled={!originalData.length || loading} // Chỉ cho phép lọc khi đã có data
+              disabled={!originalData.length || loading}
             >
               <option value="">-- Trạng thái --</option>
               {STATUS_OPTIONS.map((opt) => (
@@ -353,7 +315,6 @@ export const BookingOfManagement = () => {
             </select>
           </div>
 
-          {/* Lọc Loại Đơn */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Loại đơn
@@ -375,7 +336,6 @@ export const BookingOfManagement = () => {
             </select>
           </div>
 
-          {/* Lọc Phương thức TT */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Thanh toán
@@ -397,7 +357,6 @@ export const BookingOfManagement = () => {
             </select>
           </div>
 
-          {/* Nút Xóa lọc */}
           <div className="flex space-x-2">
             <button
               type="button"
@@ -411,7 +370,6 @@ export const BookingOfManagement = () => {
         </form>
       </div>
 
-      {/* Bảng Dữ liệu */}
       <div className="bg-white rounded-lg shadow-md overflow-x-auto border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -515,7 +473,6 @@ export const BookingOfManagement = () => {
         </table>
       </div>
 
-      {/* Phân trang & Limit */}
       {renderPagination()}
     </div>
   );

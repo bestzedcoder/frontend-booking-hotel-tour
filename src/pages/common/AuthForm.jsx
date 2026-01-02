@@ -9,35 +9,46 @@ export default function AuthForm({
   onGoogleClick,
 }) {
   return (
-    <form onSubmit={onSubmit} className="text-gray-700 w-full">
-      <h2 className="text-3xl font-extrabold mb-8 text-center text-gray-800">
-        {title} 🛒
-      </h2>
+    <form onSubmit={onSubmit} className="text-gray-700 w-full max-w-md mx-auto">
+      {/* Header Form */}
+      <div className="text-center mb-8">
+        <h2 className="text-3xl font-bold text-gray-800 flex items-center justify-center gap-2">
+          {title} <span className="text-blue-500">🌍</span>
+        </h2>
+        <p className="text-gray-500 mt-2 text-sm">
+          Khám phá những điểm đến tuyệt vời cùng chúng tôi
+        </p>
+      </div>
 
+      {/* Dynamic Fields */}
       {fields.map((field, i) => (
         <div key={i} className="mb-5">
-          <label className="block mb-2 text-sm font-semibold text-gray-600">
+          <label className="block mb-1.5 text-sm font-semibold text-gray-700">
             {field.label}
           </label>
-          <input
-            {...field}
-            className="w-full p-3 border border-gray-300 rounded-lg placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition duration-200 ease-in-out"
-          />
+          <div className="relative">
+            <input
+              {...field}
+              className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl placeholder-gray-400 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 focus:bg-white outline-none transition duration-200 ease-in-out shadow-sm"
+            />
+          </div>
         </div>
       ))}
 
+      {/* Submit Button */}
       <button
         type="submit"
         disabled={disabled}
-        className={`w-full mt-6 py-3 text-white text-lg font-bold rounded-lg transition transform shadow-md ${
+        className={`w-full mt-4 py-3.5 text-white text-lg font-bold rounded-xl transition all duration-300 shadow-lg ${
           disabled
-            ? "bg-gray-400 cursor-not-allowed shadow-none"
-            : "bg-indigo-600 hover:bg-indigo-700 active:scale-[0.98] active:shadow-sm"
+            ? "bg-gray-300 cursor-not-allowed"
+            : "bg-blue-600 hover:bg-blue-700 hover:shadow-blue-200 active:scale-[0.98]"
         }`}
       >
         {buttonText}
       </button>
 
+      {/* Google Login Option */}
       {isGoogle && (
         <>
           <div className="relative my-8">
@@ -45,8 +56,8 @@ export default function AuthForm({
               <div className="w-full border-t border-gray-200"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-3 bg-white text-gray-500 font-medium">
-                Hoặc tiếp tục với
+              <span className="px-4 bg-white text-gray-400 font-medium">
+                Hoặc tiếp tục với hành trình
               </span>
             </div>
           </div>
@@ -55,11 +66,11 @@ export default function AuthForm({
             type="button"
             onClick={onGoogleClick}
             disabled={disabled}
-            className={`w-full py-2.5 px-4 border border-indigo-200 rounded-lg font-medium text-gray-700 bg-white hover:bg-indigo-50 transition flex items-center justify-center gap-3 shadow-sm ${
+            className={`w-full py-3 px-4 border border-gray-200 rounded-xl font-semibold text-gray-700 bg-white hover:bg-gray-50 transition flex items-center justify-center gap-3 shadow-sm ${
               disabled ? "opacity-50 cursor-not-allowed" : "active:scale-[0.99]"
             }`}
           >
-            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+            <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -77,15 +88,16 @@ export default function AuthForm({
                 d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
               />
             </svg>
-            <span className="text-base font-semibold">
-              Đăng nhập bằng Google
-            </span>
+            <span>Google</span>
           </button>
         </>
       )}
 
+      {/* Footer Link */}
       {footer && (
-        <div className="mt-8 text-center text-sm text-gray-600">{footer}</div>
+        <div className="mt-8 text-center text-sm font-medium text-gray-500">
+          {footer}
+        </div>
       )}
     </form>
   );

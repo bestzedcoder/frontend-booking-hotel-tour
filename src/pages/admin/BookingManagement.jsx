@@ -1,15 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
-import {
-  Search,
-  Loader2,
-  Filter,
-  X,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { Search, Loader2, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useApi } from "../../hooks/useApi";
-
-// --- CÁC HẰNG VÀ MAPPING ---
 
 const LIMIT_OPTIONS = [
   { value: 10, label: "10 / trang" },
@@ -41,20 +32,16 @@ const METHOD_OPTIONS = [
   { value: "CASH", label: "Tiền mặt" },
 ];
 
-// Hàm chuyển đổi trạng thái để hiển thị
 const getStatusDisplay = (status) =>
   STATUS_OPTIONS.find((opt) => opt.value === status) || {
     label: status,
     color: "text-gray-600 bg-gray-100",
   };
 
-// Hàm định dạng tiền tệ
 const formatCurrency = (amount) =>
   new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(
     amount || 0
   );
-
-// --- COMPONENT CHÍNH ---
 
 export default function BookingManagement() {
   const { callApi } = useApi();
@@ -62,7 +49,6 @@ export default function BookingManagement() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Trạng thái cho bộ lọc và phân trang (Filter state cho API)
   const [filters, setFilters] = useState({
     page: 1,
     limit: 10,
@@ -73,23 +59,19 @@ export default function BookingManagement() {
     payment_method: null,
   });
 
-  // Trạng thái cho các input text (Dùng cho giao diện, để không trigger API liên tục)
   const [searchCode, setSearchCode] = useState("");
   const [searchCustomer, setSearchCustomer] = useState("");
-  const [selectedLimit, setSelectedLimit] = useState(10); // Quản lý Limit riêng
+  const [selectedLimit, setSelectedLimit] = useState(10);
 
-  // Hàm gọi API (nhận bộ lọc hiện tại)
   const fetchBookings = useCallback(
     async (currentFilters) => {
       setLoading(true);
       setError(null);
 
-      // Xây dựng Query Params từ object currentFilters
       const params = new URLSearchParams();
       params.append("page", currentFilters.page.toString());
       params.append("limit", currentFilters.limit.toString());
 
-      // Thêm các tham số tùy chọn
       if (currentFilters.status) params.append("status", currentFilters.status);
       if (currentFilters.booking_type)
         params.append("booking_type", currentFilters.booking_type);
@@ -103,12 +85,10 @@ export default function BookingManagement() {
       try {
         const response = await callApi(
           "get",
-          // Gửi params trực tiếp là tốt nhất nếu useApi hỗ trợ
           `bookings/by-admin?${params.toString()}`
         );
         setData(response.data);
 
-        // Cập nhật filters chính thức sau khi fetch thành công
         setFilters(currentFilters);
       } catch (err) {
         console.error("Lỗi khi tải dữ liệu:", err);
@@ -120,15 +100,10 @@ export default function BookingManagement() {
     [callApi]
   );
 
-  // Effect gọi API lần đầu (chỉ khi component mount)
   useEffect(() => {
-    // Gọi API với trạng thái khởi tạo
     fetchBookings(filters);
-  }, []); // Chỉ chạy 1 lần khi mount
+  }, []);
 
-  // --- HANDLERS ---
-
-  // Xử lý thay đổi trường Select (status, type, method)
   const handleFilterSelectChange = (field, value) => {
     setFilters((prev) => ({
       ...prev,
@@ -136,31 +111,28 @@ export default function BookingManagement() {
     }));
   };
 
-  // Xử lý thay đổi Limit (Reset trang về 1 và gọi API)
   const handleLimitChange = (e) => {
     const newLimit = parseInt(e.target.value, 10);
     setSelectedLimit(newLimit);
     const newFilters = {
       ...filters,
       limit: newLimit,
-      page: 1, // Reset trang về 1
+      page: 1,
     };
     fetchBookings(newFilters);
   };
 
-  // Xử lý submit tìm kiếm (CHỈ CHẠY KHI ẤN NÚT TÌM KIẾM)
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     const newFilters = {
       ...filters,
       booking_code: searchCode,
       customer: searchCustomer,
-      page: 1, // **QUAN TRỌNG: Reset về trang 1 khi thực hiện tìm kiếm/lọc mới**
+      page: 1,
     };
     fetchBookings(newFilters);
   };
 
-  // Xử lý phân trang (Chuyển trang)
   const handlePageChange = (newPage) => {
     if (!data || newPage < 1 || newPage > data.totalPages || loading) return;
 
@@ -168,11 +140,10 @@ export default function BookingManagement() {
     fetchBookings(newFilters);
   };
 
-  // Xóa tất cả bộ lọc
   const handleClearFilters = () => {
     const defaultFilters = {
       page: 1,
-      limit: selectedLimit, // Giữ Limit hiện tại
+      limit: selectedLimit,
       status: null,
       booking_type: null,
       booking_code: "",
@@ -182,11 +153,9 @@ export default function BookingManagement() {
     setSearchCode("");
     setSearchCustomer("");
 
-    // Gọi API ngay lập tức với bộ lọc mặc định
     fetchBookings(defaultFilters);
   };
 
-  // --- RENDER PHÂN TRANG CHUYÊN NGHIỆP HƠN ---
   const renderPagination = () => {
     if (!data || data.totalPages <= 1) return null;
 
@@ -209,7 +178,6 @@ export default function BookingManagement() {
       </button>
     );
 
-    // Logic hiển thị tối đa 5 nút trang
     const pages = [];
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, currentPage + 2);
@@ -220,12 +188,10 @@ export default function BookingManagement() {
       startPage = Math.max(1, totalPages - 4);
     }
 
-    // Thêm nút trang
     for (let i = startPage; i <= endPage; i++) {
       pages.push(renderPageButton(i, i === currentPage));
     }
 
-    // Thêm dấu ... nếu cần
     if (startPage > 1) {
       pages.unshift(
         <span key="start-dots" className="px-3 py-1 text-gray-500">
@@ -245,7 +211,6 @@ export default function BookingManagement() {
 
     return (
       <div className="flex justify-between items-center mt-6 p-4 bg-white rounded-lg shadow-sm border border-gray-100">
-        {/* Thông tin tổng quan */}
         <div className="text-sm text-gray-600">
           Hiển thị{" "}
           <span className="font-semibold text-gray-900">
@@ -258,7 +223,6 @@ export default function BookingManagement() {
           đơn đặt chỗ.
         </div>
 
-        {/* Nhóm điều khiển phân trang */}
         <div className="flex items-center space-x-1">
           <button
             onClick={() => handlePageChange(currentPage - 1)}
@@ -281,7 +245,6 @@ export default function BookingManagement() {
           </button>
         </div>
 
-        {/* Thay đổi Limit/Trang */}
         <div className="flex items-center space-x-2">
           <label htmlFor="limit-select" className="text-sm text-gray-700">
             Hiển thị:
@@ -304,20 +267,17 @@ export default function BookingManagement() {
     );
   };
 
-  // --- JSX RENDER ---
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">
         Quản lý Đặt chỗ 📋
       </h1>
 
-      {/* Bộ lọc và Tìm kiếm (Giao diện gọn hơn) */}
       <div className="bg-white p-4 rounded-lg shadow-md mb-6 border border-gray-200">
         <form
           onSubmit={handleSearchSubmit}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6 gap-4 items-end"
         >
-          {/* Lọc Trạng thái */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Trạng thái
@@ -338,7 +298,6 @@ export default function BookingManagement() {
             </select>
           </div>
 
-          {/* Lọc Loại Đơn */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Loại đơn
@@ -359,7 +318,6 @@ export default function BookingManagement() {
             </select>
           </div>
 
-          {/* Lọc Phương thức TT */}
           <div>
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Thanh toán
@@ -380,7 +338,6 @@ export default function BookingManagement() {
             </select>
           </div>
 
-          {/* Tìm kiếm Mã đơn */}
           <div>
             <label
               htmlFor="booking_code"
@@ -398,7 +355,6 @@ export default function BookingManagement() {
             />
           </div>
 
-          {/* Tìm kiếm Khách hàng */}
           <div>
             <label
               htmlFor="customer"
@@ -416,7 +372,6 @@ export default function BookingManagement() {
             />
           </div>
 
-          {/* Nút Tìm kiếm & Xóa lọc */}
           <div className="flex space-x-2">
             <button
               type="submit"
@@ -437,7 +392,6 @@ export default function BookingManagement() {
         </form>
       </div>
 
-      {/* Bảng Dữ liệu */}
       <div className="bg-white rounded-lg shadow-md overflow-x-auto border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
@@ -485,8 +439,6 @@ export default function BookingManagement() {
             ) : data?.result?.length > 0 ? (
               data.result.map((booking) => {
                 const statusDisplay = getStatusDisplay(booking.status);
-                // **LƯU Ý:** Dữ liệu booking.customerName và booking.bookingType
-                // vẫn đang giả định, cần đảm bảo backend trả về
                 return (
                   <tr key={booking.bookingId}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600 cursor-pointer hover:underline">
@@ -520,7 +472,6 @@ export default function BookingManagement() {
                       <button className="text-indigo-600 hover:text-indigo-900 mr-3">
                         Chi tiết
                       </button>
-                      {/* Thêm nút hành động quản trị (Xác nhận/Hủy/...) */}
                     </td>
                   </tr>
                 );
@@ -536,7 +487,6 @@ export default function BookingManagement() {
         </table>
       </div>
 
-      {/* Phân trang & Limit */}
       {renderPagination()}
     </div>
   );

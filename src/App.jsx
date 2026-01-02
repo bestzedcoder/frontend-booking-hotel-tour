@@ -35,6 +35,7 @@ import TourManagement from "./pages/admin/TourManagement";
 import BookingManagement from "./pages/admin/BookingManagement";
 import { BookingOfManagement } from "./pages/admin/BookingOfManagement";
 import { BookingProcessingPage } from "./pages/customer/BookingProcessingPage";
+import { ForgetPasswordPage } from "./pages/ForgetPassword";
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
             </PublicLayout>
           }
         />
+
         <Route
           path="/register"
           element={
@@ -58,7 +60,18 @@ function App() {
             </PublicLayout>
           }
         />
+
+        <Route
+          path="/forget-password"
+          element={
+            <PublicLayout>
+              <ForgetPasswordPage />
+            </PublicLayout>
+          }
+        />
+
         <Route path="/oauth2/success" element={<OAuthSuccess />} />
+
         <Route
           path="/verify-account"
           element={

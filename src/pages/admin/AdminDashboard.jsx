@@ -27,22 +27,18 @@ import {
   Cell,
 } from "recharts";
 
-// --- CẤU HÌNH UI ---
-
-// 1. Map tên trạng thái từ Anh -> Việt
 const STATUS_MAPPING = {
   pending: "Chờ xử lý",
   confirmed: "Đã xác nhận",
   cancelled: "Đã hủy",
 };
 
-// 2. Map màu sắc tương ứng với trạng thái (để biểu đồ trực quan hơn)
 const STATUS_COLORS = {
-  pending: "#FFBB28", // Vàng
-  confirmed: "#00C49F", // Xanh lá
-  cancelled: "#FF4444", // Đỏ
-  completed: "#0088FE", // Xanh dương
-  default: "#8884d8", // Tím (mặc định)
+  pending: "#FFBB28",
+  confirmed: "#00C49F",
+  cancelled: "#FF4444",
+  completed: "#0088FE",
+  default: "#8884d8",
 };
 
 const MetricCard = ({ icon: Icon, title, value, color, bg }) => (
@@ -99,30 +95,25 @@ export default function AdminDashboard() {
           ]
         );
 
-        // 1. Xử lý Doanh thu
         const processedRevenue = (resRevenue.data || []).map((item) => ({
           name: formatDateLabel(item.month),
           revenue: item.revenue,
         }));
 
-        // 2. Xử lý User (revenue -> count)
         const processedUsers = (resUsers.data || []).map((item) => ({
           name: formatDateLabel(item.month),
           count: item.revenue,
         }));
 
-        // 3. Xử lý Trạng thái (Object -> Array)
-        // API trả về: { pending: 0, cancelled: 5, confirmed: 6 }
         const statusRaw = resStatus.data || {};
 
-        // Chuyển thành: [{ name: "Đã hủy", value: 5, originalKey: "cancelled" }, ...]
         const processedStatus = Object.entries(statusRaw)
           .map(([key, value]) => ({
-            name: STATUS_MAPPING[key] || key, // Dùng tên tiếng Việt
-            value: value, // Số lượng
-            originalKey: key, // Giữ key gốc để lấy màu
+            name: STATUS_MAPPING[key] || key,
+            value: value,
+            originalKey: key,
           }))
-          .filter((item) => item.value > 0); // (Tùy chọn) Ẩn các mục có giá trị 0 để biểu đồ đẹp hơn
+          .filter((item) => item.value > 0);
 
         setData({
           summary: resSummary.data,
@@ -199,7 +190,6 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-        {/* Biểu đồ Doanh thu */}
         <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
           <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
             <TrendingUp size={20} className="text-green-500" /> Doanh thu theo
@@ -237,7 +227,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Biểu đồ Trạng thái đơn (Đã cập nhật logic hiển thị) */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col">
           <h2 className="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2">
             <CreditCard size={20} className="text-orange-500" /> Trạng thái đơn
@@ -253,13 +242,12 @@ export default function AdminDashboard() {
                     innerRadius={60}
                     outerRadius={90}
                     paddingAngle={5}
-                    dataKey="value" // Số lượng
-                    nameKey="name" // Tên hiển thị (Tiếng Việt)
+                    dataKey="value"
+                    nameKey="name"
                   >
                     {data.bookingStatus.map((entry, index) => (
                       <Cell
                         key={`cell-${index}`}
-                        // Lấy màu dựa trên key gốc (pending, cancelled...)
                         fill={
                           STATUS_COLORS[entry.originalKey] ||
                           STATUS_COLORS.default
