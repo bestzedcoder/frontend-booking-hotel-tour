@@ -36,6 +36,8 @@ import BookingManagement from "./pages/admin/BookingManagement";
 import { BookingOfManagement } from "./pages/admin/BookingOfManagement";
 import { BookingProcessingPage } from "./pages/customer/BookingProcessingPage";
 import { ForgetPasswordPage } from "./pages/ForgetPassword";
+import { ConsultationPage } from "./pages/customer/Consultation";
+import { ChatMessagePage } from "./pages/business/ChatMessage";
 
 function App() {
   return (
@@ -113,6 +115,7 @@ function App() {
           />
           <Route path="bookings" element={<BookingManagementPage />} />
           <Route path="payment/result" element={<PaymentResultPage />} />
+          <Route path="messages" element={<ConsultationPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
 
@@ -157,6 +160,7 @@ function App() {
             path="my-bookings"
             element={<BookingManagementBusinessPage />}
           />
+          <Route path="messages" element={<ChatMessagePage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
 

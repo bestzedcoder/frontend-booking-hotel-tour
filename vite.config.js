@@ -12,4 +12,7 @@ export default defineConfig({
     port: process.env.PORT ? parseInt(process.env.PORT) : 10000,
     allowedHosts: ["frontend-booking-hotel-tour.onrender.com"],
   },
+  define: {
+    global: "window",
+  },
 });

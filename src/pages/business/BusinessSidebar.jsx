@@ -1,4 +1,4 @@
-import { Briefcase, Calendar, Hotel, Plane } from "lucide-react";
+import { Briefcase, Calendar, Hotel, MessageSquare, Plane } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 export const BusinessSidebar = () => {
@@ -9,6 +9,7 @@ export const BusinessSidebar = () => {
     { name: "Quản lý Khách sạn", icon: Hotel, path: "/business/my-hotels" },
     { name: "Quản lý Tour", icon: Plane, path: "/business/my-tours" },
     { name: "Lịch đặt chỗ", icon: Calendar, path: "/business/my-bookings" },
+    { name: "Tin nhắn", icon: MessageSquare, path: "/business/messages" },
   ];
 
   return (

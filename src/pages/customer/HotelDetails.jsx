@@ -232,9 +232,11 @@ const OwnerContactCard = ({ owner }) => (
         Liên Hệ Quản Lý Khách Sạn
       </h4>
     </div>
+
     <p className="text-lg font-bold text-gray-800 mb-1 flex items-center">
       <span className="text-red-500 mr-2">👤</span> {owner.fullName}
     </p>
+
     <div className="flex items-center text-gray-700 mt-2">
       <svg
         className="w-5 h-5 mr-2 text-indigo-600"
@@ -254,6 +256,28 @@ const OwnerContactCard = ({ owner }) => (
         className="text-xl font-extrabold text-red-600 hover:text-indigo-700 transition underline"
       >
         {owner.phoneNumber}
+      </a>
+    </div>
+
+    <div className="flex items-center text-gray-700 mt-2">
+      <svg
+        className="w-5 h-5 mr-2 text-indigo-600"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+        />
+      </svg>
+      <a
+        href={`mailto:${owner.email}`}
+        className="text-base font-medium text-gray-700 hover:text-indigo-700 transition underline break-all"
+      >
+        {owner.email}
       </a>
     </div>
   </div>
@@ -456,14 +480,6 @@ const HotelDetailsPage = () => {
                   </span>
                   <span className="text-red-500 font-bold text-xl ml-2">
                     {getStarIcon(hotelData.hotelStar)}
-                  </span>
-                </p>
-                <p className="flex items-center text-base">
-                  <span className="font-semibold text-gray-700 w-24">
-                    Điện thoại:
-                  </span>
-                  <span className="text-indigo-600 font-medium ml-2 hover:underline">
-                    {hotelData.hotelPhone}
                   </span>
                 </p>
                 <p className="flex items-start text-base">

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BACKEND_URL = "https://unconspiring-venously-erminia.ngrok-free.dev/api";
+const BACKEND_URL = "http://localhost:8080/api";
 
 const axiosClient = axios.create({
   baseURL: BACKEND_URL,

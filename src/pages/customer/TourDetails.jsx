@@ -16,6 +16,7 @@ import {
   User,
   MessageSquare,
   AlertTriangle,
+  Mail,
 } from "lucide-react";
 import { useApi } from "../../hooks/useApi";
 
@@ -273,41 +274,54 @@ const TourDetails = () => {
 };
 
 const OwnerInfoBox = ({ owner }) => (
-  <div className="bg-white p-6 rounded-xl shadow-xl border-l-4 border-green-500">
+  <div className="bg-white p-6 rounded-xl shadow-xl border-l-4 border-green-500 max-w-sm">
     <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center border-b pb-2">
       <User size={24} className="mr-2 text-green-600" />
       Người Quản Lý Tour
     </h3>
 
-    <div className="flex items-center space-x-4 mb-4">
+    <div className="flex items-center space-x-4 mb-5">
       <img
         src={
           owner.avatarUrl ||
           "https://cdn-icons-png.flaticon.com/512/149/149071.png"
         }
         alt={owner.fullName}
-        className="w-16 h-16 rounded-full object-cover border-2 border-green-400 flex-shrink-0"
+        className="w-16 h-16 rounded-full object-cover border-2 border-green-100 flex-shrink-0 shadow-sm"
       />
       <div>
-        <p className="text-lg font-bold text-gray-900">{owner.fullName}</p>
-        <p className="text-sm text-gray-500">Chuyên viên tư vấn Du lịch</p>
+        <p className="text-lg font-bold text-gray-900 leading-tight">
+          {owner.fullName}
+        </p>
+        <p className="text-sm text-gray-500 font-medium">
+          Chuyên viên tư vấn Du lịch
+        </p>
       </div>
     </div>
 
     <div className="space-y-3">
       <a
         href={`tel:${owner.phoneNumber}`}
-        className="flex items-center justify-center py-2 px-4 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition shadow-md"
+        className="flex items-center justify-center py-3 px-4 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition-all duration-300 shadow-lg shadow-green-200 active:scale-95"
       >
-        <Phone size={18} className="mr-2" />
+        <Phone size={20} className="mr-2" />
         Gọi Ngay: {owner.phoneNumber}
       </a>
+
       <button
-        onClick={() => alert(`Chat với ${owner.fullName} qua Zalo/Message`)}
-        className="w-full flex items-center justify-center py-2 px-4 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition border"
+        onClick={() => {
+          navigator.clipboard.writeText(owner.email);
+        }}
+        className="group w-full flex items-center justify-center py-3 px-4 bg-gray-50 text-gray-700 font-semibold rounded-xl border-2 border-dashed border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition-all duration-300 active:scale-95"
       >
-        <MessageSquare size={18} className="mr-2 text-indigo-500" />
-        Chat Tư Vấn
+        <Mail
+          size={22}
+          className="mr-3 text-blue-500 flex-shrink-0 group-hover:scale-110 transition-transform"
+        />
+
+        <span className="text-base text-gray-700 group-hover:text-blue-600 truncate">
+          {owner.email}
+        </span>
       </button>
     </div>
   </div>
