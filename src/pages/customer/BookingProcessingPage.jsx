@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Client } from "@stomp/stompjs";
 
-// const WS_URL = "ws://160.30.172.199:8080/api/ws-booking";
-const WS_URL = "ws://localhost:8080/api/ws-booking";
+const WS_URL = "ws://160.30.172.199:8080/api/ws-booking";
+// const WS_URL = "ws://localhost:8080/api/ws-booking";
 export const BookingProcessingPage = () => {
   const { code: bookingCode, type: bookingType } = useParams();
   const navigate = useNavigate();
