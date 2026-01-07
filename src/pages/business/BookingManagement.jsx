@@ -10,6 +10,16 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  User,
+  Mail,
+  Phone,
+  Info,
+  MapPin,
+  Users,
+  BedDouble,
+  Calendar,
+  Clock,
+  X,
 } from "lucide-react";
 import { useApi } from "../../hooks/useApi";
 
@@ -101,6 +111,22 @@ const BookingManagementBusinessPage = () => {
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newStatus, setNewStatus] = useState("");
+
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+
+  const openCustomerModal = (customer) => {
+    setSelectedCustomer(customer);
+    setIsCustomerModalOpen(true);
+  };
+
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [selectedBookingDetails, setSelectedBookingDetails] = useState(null);
+
+  const openDetailsModal = (booking) => {
+    setSelectedBookingDetails(booking);
+    setIsDetailsModalOpen(true);
+  };
 
   const fetchBookings = useCallback(async () => {
     setLoading(true);
@@ -497,13 +523,34 @@ const BookingManagementBusinessPage = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-center">
-                        <button
-                          onClick={() => openUpdateModal(item)}
-                          className="text-slate-400 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-full transition-all"
-                          title="Cập nhật trạng thái"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center justify-center gap-2">
+                          {/* Nút Xem thông tin khách hàng (đã làm ở bước trước) */}
+                          <button
+                            onClick={() => openCustomerModal(item.customer)}
+                            className="text-slate-400 hover:text-green-600 hover:bg-green-50 p-2 rounded-full transition-all"
+                            title="Thông tin khách hàng"
+                          >
+                            <User className="w-4 h-4" />
+                          </button>
+
+                          {/* NÚT MỚI: Xem chi tiết đơn hàng */}
+                          <button
+                            onClick={() => openDetailsModal(item)}
+                            className="text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 p-2 rounded-full transition-all"
+                            title="Chi tiết đơn hàng"
+                          >
+                            <Info className="w-4 h-4" />
+                          </button>
+
+                          {/* Nút Cập nhật trạng thái */}
+                          <button
+                            onClick={() => openUpdateModal(item)}
+                            className="text-slate-400 hover:text-blue-600 hover:bg-blue-50 p-2 rounded-full transition-all"
+                            title="Cập nhật trạng thái"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -704,6 +751,278 @@ const BookingManagementBusinessPage = () => {
                   className="mt-3 inline-flex w-full justify-center rounded-lg bg-white px-3 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto transition-colors"
                 >
                   Hủy bỏ
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal Chi tiết khách hàng */}
+      {isCustomerModalOpen && selectedCustomer && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
+            onClick={() => setIsCustomerModalOpen(false)}
+          ></div>
+          <div className="flex min-h-full items-center justify-center p-4">
+            <div className="relative transform overflow-hidden rounded-xl bg-white text-left shadow-2xl transition-all sm:w-full sm:max-w-md border border-gray-100">
+              <div className="bg-white px-6 py-5">
+                <div className="flex items-center justify-between mb-5">
+                  <h3 className="text-lg font-bold text-slate-900">
+                    Thông tin khách hàng
+                  </h3>
+                  <div className="bg-green-100 p-2 rounded-full">
+                    <User className="w-5 h-5 text-green-600" />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <div className="mt-0.5 text-slate-400">
+                      <User className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-slate-500 uppercase">
+                        Họ và tên
+                      </p>
+                      <p className="text-sm font-medium text-slate-900">
+                        {selectedCustomer.fullName || "N/A"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <div className="mt-0.5 text-slate-400">
+                      <Phone className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-slate-500 uppercase">
+                        Số điện thoại
+                      </p>
+                      <p className="text-sm font-medium text-slate-900">
+                        {selectedCustomer.phoneNumber || "N/A"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+                    <div className="mt-0.5 text-slate-400">
+                      <Mail className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-slate-500 uppercase">
+                        Email
+                      </p>
+                      <p className="text-sm font-medium text-slate-900">
+                        {selectedCustomer.email || "N/A"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-50 px-6 py-4 flex justify-end border-t border-gray-100">
+                <button
+                  type="button"
+                  onClick={() => setIsCustomerModalOpen(false)}
+                  className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors"
+                >
+                  Đóng
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Chi tiết đơn hàng */}
+      {isDetailsModalOpen && selectedBookingDetails && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
+            onClick={() => setIsDetailsModalOpen(false)}
+          ></div>
+          <div className="flex min-h-full items-center justify-center p-4">
+            <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-gray-100 animate-in zoom-in-95 duration-200">
+              {/* Header Modal - Phân biệt màu sắc theo loại dịch vụ */}
+              <div
+                className={`px-6 py-5 flex justify-between items-center text-white ${
+                  selectedBookingDetails.type === "TOUR"
+                    ? "bg-orange-500"
+                    : "bg-indigo-600"
+                }`}
+              >
+                <div>
+                  <h3 className="text-lg font-extrabold flex items-center gap-2">
+                    {selectedBookingDetails.type === "TOUR" ? (
+                      <MapPin size={20} />
+                    ) : (
+                      <BedDouble size={20} />
+                    )}
+                    Chi tiết{" "}
+                    {selectedBookingDetails.type === "TOUR"
+                      ? "Tour du lịch"
+                      : "Đặt phòng khách sạn"}
+                  </h3>
+                  <p className="text-xs opacity-80 mt-1 font-mono">
+                    Mã đơn: {selectedBookingDetails.code}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setIsDetailsModalOpen(false)}
+                  className="hover:bg-white/20 p-1.5 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6">
+                {/* Thông tin tiêu đề & Giá */}
+                <div className="mb-6 pb-6 border-b border-slate-100">
+                  <h4 className="text-xl font-black text-slate-800 leading-tight mb-2">
+                    {selectedBookingDetails.details.name}
+                  </h4>
+
+                  {/* Badge loại hình đặt (Chỉ hiện cho HOTEL) */}
+                  {selectedBookingDetails.type === "HOTEL" && (
+                    <div className="mb-3">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded text-[10px] font-black uppercase border ${
+                          selectedBookingDetails.details.bookingRoomType ===
+                          "HOURLY"
+                            ? "bg-amber-50 text-amber-700 border-amber-200"
+                            : "bg-emerald-50 text-emerald-700 border-emerald-100"
+                        }`}
+                      >
+                        {selectedBookingDetails.details.bookingRoomType ===
+                        "HOURLY"
+                          ? "⚡ Đặt theo giờ"
+                          : "📅 Đặt theo ngày"}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl">
+                    <span className="text-sm text-slate-500 font-medium">
+                      Tổng tiền thanh toán:
+                    </span>
+                    <span className="text-lg font-black text-blue-600">
+                      {new Intl.NumberFormat("vi-VN", {
+                        style: "currency",
+                        currency: "VND",
+                      }).format(selectedBookingDetails.price)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Grid thông tin chi tiết */}
+                <div className="grid grid-cols-2 gap-4">
+                  {selectedBookingDetails.type === "TOUR" ? (
+                    /* --- UI CHO TOUR --- */
+                    <>
+                      <div className="bg-orange-50 p-3 rounded-xl border border-orange-100">
+                        <p className="text-[10px] uppercase font-bold text-orange-600 mb-1">
+                          Ngày khởi hành
+                        </p>
+                        <div className="flex items-center gap-2 text-slate-700 font-bold text-sm">
+                          <Calendar className="w-4 h-4 text-orange-400" />{" "}
+                          {selectedBookingDetails.details.checkIn}
+                        </div>
+                      </div>
+                      <div className="bg-orange-50 p-3 rounded-xl border border-orange-100">
+                        <p className="text-[10px] uppercase font-bold text-orange-600 mb-1">
+                          Ngày kết thúc
+                        </p>
+                        <div className="flex items-center gap-2 text-slate-700 font-bold text-sm">
+                          <Calendar className="w-4 h-4 text-orange-400" />{" "}
+                          {selectedBookingDetails.details.checkOut}
+                        </div>
+                      </div>
+                      <div className="col-span-1 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <p className="text-[10px] uppercase font-bold text-slate-500 mb-1">
+                          Thời gian
+                        </p>
+                        <div className="flex items-center gap-2 text-slate-700 font-bold text-sm">
+                          <Clock className="w-4 h-4 text-slate-400" />{" "}
+                          {selectedBookingDetails.details.duration} ngày
+                        </div>
+                      </div>
+                      <div className="col-span-1 bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <p className="text-[10px] uppercase font-bold text-slate-500 mb-1">
+                          Số lượng khách
+                        </p>
+                        <div className="flex items-center gap-2 text-slate-700 font-bold text-sm">
+                          <Users className="w-4 h-4 text-slate-400" />{" "}
+                          {selectedBookingDetails.details.people} người
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    /* --- UI CHO HOTEL --- */
+                    <>
+                      <div className="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
+                        <p className="text-[10px] uppercase font-bold text-indigo-600 mb-1">
+                          Nhận phòng
+                        </p>
+                        <div className="flex items-center gap-2 text-slate-700 font-bold text-sm">
+                          <Calendar className="w-4 h-4 text-indigo-400" />{" "}
+                          {selectedBookingDetails.details.checkInDate}
+                        </div>
+                      </div>
+                      <div className="bg-indigo-50 p-3 rounded-xl border border-indigo-100">
+                        <p className="text-[10px] uppercase font-bold text-indigo-600 mb-1">
+                          Trả phòng
+                        </p>
+                        <div className="flex items-center gap-2 text-slate-700 font-bold text-sm">
+                          <Calendar className="w-4 h-4 text-indigo-400" />{" "}
+                          {selectedBookingDetails.details.checkOutDate}
+                        </div>
+                      </div>
+
+                      <div className="col-span-2 space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div className="flex justify-between items-center border-b border-slate-200 pb-2">
+                          <span className="text-sm text-slate-500 flex items-center gap-2">
+                            <Clock className="w-4 h-4" /> Thời lượng:
+                          </span>
+                          <span className="text-sm font-black text-slate-800 uppercase">
+                            {selectedBookingDetails.details.duration}{" "}
+                            {selectedBookingDetails.details.bookingRoomType ===
+                            "HOURLY"
+                              ? "Giờ"
+                              : "Ngày"}
+                          </span>
+                        </div>
+
+                        <div className="flex justify-between items-center border-b border-slate-200 pb-2">
+                          <span className="text-sm text-slate-500 flex items-center gap-2">
+                            <BedDouble className="w-4 h-4" /> Tên phòng:
+                          </span>
+                          <span className="text-sm font-bold text-slate-800">
+                            {selectedBookingDetails.details.roomName}
+                          </span>
+                        </div>
+
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-slate-500">
+                            Loại phòng:
+                          </span>
+                          <span className="px-2 py-0.5 bg-white border border-slate-200 rounded text-[10px] font-black text-indigo-600 uppercase">
+                            {selectedBookingDetails.details.roomType}
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="bg-slate-50 px-6 py-4 flex justify-end gap-3 border-t border-slate-100">
+                <button
+                  onClick={() => setIsDetailsModalOpen(false)}
+                  className="px-8 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-100 transition-all shadow-sm active:scale-95"
+                >
+                  Đóng cửa sổ
                 </button>
               </div>
             </div>

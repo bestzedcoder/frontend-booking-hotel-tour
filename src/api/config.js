@@ -1,12 +1,11 @@
 import axios from "axios";
 
-const BACKEND_URL = "http://localhost:8080/api";
-
+const BACKEND_URL = "http://160.30.172.199:8080/api";
+// const BACKEND_URL = "http://localhost:8080/api";
 const axiosClient = axios.create({
   baseURL: BACKEND_URL,
   headers: {
     "Content-Type": "application/json",
-    "ngrok-skip-browser-warning": "true",
   },
 });
 
