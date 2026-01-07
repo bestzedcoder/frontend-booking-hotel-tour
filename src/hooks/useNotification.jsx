@@ -6,8 +6,8 @@ const NotificationContext = createContext();
 
 const notificationSound = new Audio("/assets/notification.mp3");
 
-const WS_URL = "ws://160.30.172.199:8080/api/ws-chat";
-// const WS_URL = "ws://localhost:8080/api/ws-chat";
+// const WS_URL = "ws://160.30.172.199:8080/api/ws-chat";
+const WS_URL = "ws://localhost:8080/api/ws-chat";
 
 export const NotificationProvider = ({ children }) => {
   const { user } = useAuth();
